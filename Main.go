@@ -2,9 +2,11 @@ package main
 
 import (
 	"bufio"
+	"flag"
 	"fmt"
 	"log"
 	"os"
+	"strings"
 
 	"github.com/jmoiron/sqlx"
 	_ "github.com/lib/pq"
@@ -16,7 +18,7 @@ SELECT
     column_name,
     data_type
 FROM
-    information_schema.column
+    information_schema.columns
 WHERE
     table_schema = '%s'
     AND table_name = '%s'
@@ -60,27 +62,46 @@ func init() {
 }
 
 func main() {
-	fmt.Print("Enter your database user: ")
+	default_flag := flag.Bool("defaultConfig", false, "Whether to use default Postgres connection properties")
 
-	dbUser, _ := read_user_input()
+	flag.Parse()
 
-	fmt.Print("Enter your database name: ")
+	default_value := *default_flag
 
-	dbName, _ := read_user_input()
+	var connection_string string
+	if default_value {
+		fmt.Println("Running with default Postgres connection properties")
+		connection_string = "user=postgres dbname=postgres sslmode=disable password=123 host=localhost"
+	} else {
 
-	fmt.Printf("Enter your database password: ")
+		fmt.Print("Enter your database user: ")
 
-	dbPwd, _ := read_user_input()
+		dbUser, _ := read_user_input()
 
-	fmt.Printf("Enter your database host: ")
+		fmt.Print("Enter your database name: ")
 
-	dbHost, _ := read_user_input()
+		dbName, _ := read_user_input()
 
-	connection_string := fmt.Sprintf("user=%s dbname=%s sslmode=disable password=%s host=%s", dbUser, dbName, dbPwd, dbHost)
+		fmt.Printf("Enter your database password: ")
+
+		dbPwd, _ := read_user_input()
+
+		fmt.Printf("Enter your database host: ")
+
+		dbHost, _ := read_user_input()
+
+		connection_string = fmt.Sprintf("user=%s dbname=%s sslmode=disable password=%s host=%s", dbUser, dbName, dbPwd, dbHost)
+	}
 
 	db, err := sqlx.Connect("postgres", connection_string)
 	if err != nil {
 		log.Fatalln(err)
+	}
+
+	if err := db.Ping(); err != nil {
+		log.Fatal(err)
+	} else {
+		log.Println("Successfully connected")
 	}
 
 	defer db.Close()
@@ -89,10 +110,37 @@ func main() {
 
 	db_schema, _ := read_user_input()
 
-	if err := db.Ping(); err != nil {
-		log.Fatal(err)
-	} else {
-		log.Println("Successfully connected")
+	tables, err := db.Queryx(fmt.Sprintf(ALL_TABLES_IN_SCHEMA_QUERY, strings.TrimSuffix(db_schema, "\n")))
+	if err != nil {
+		log.Fatalln(err)
+	}
+
+	defer tables.Close()
+
+	for tables.Next() {
+		var table_name string
+		if err := tables.Scan(&table_name); err != nil {
+			log.Fatalln(err)
+		}
+
+		columns, err := db.Queryx(fmt.Sprintf(COLUMN_LIST_ORDER_QUERY, strings.TrimSuffix(db_schema, "\n"), table_name))
+		if err != nil {
+			log.Fatalln(err)
+		}
+		defer columns.Close()
+
+		for columns.Next() {
+			var column_name string
+			if err := columns.Scan(&column_name); err != nil {
+				log.Fatalln(err)
+			}
+			fmt.Printf("%#v\n", column_name)
+		}
+
+		if err := columns.Err(); err != nil {
+			log.Fatalln(err)
+		}
+
 	}
 }
 
