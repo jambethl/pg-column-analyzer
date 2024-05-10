@@ -129,12 +129,15 @@ func main() {
 		}
 		defer columns.Close()
 
+		fmt.Println("Ordinal Position\tColumn Name\tData Type") // Just for testing purposes
 		for columns.Next() {
+			var ordinal_position int
 			var column_name string
-			if err := columns.Scan(&column_name); err != nil {
+			var data_type string
+			if err := columns.Scan(&ordinal_position, &column_name, &data_type); err != nil {
 				log.Fatalln(err)
 			}
-			fmt.Printf("%#v\n", column_name)
+			fmt.Printf("%d\t\t%s\t\t%s\n", ordinal_position, column_name, data_type) // Just for testing purposes
 		}
 
 		if err := columns.Err(); err != nil {
