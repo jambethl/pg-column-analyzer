@@ -12,6 +12,14 @@ import (
 	_ "github.com/lib/pq"
 )
 
+const (
+	DATABASE_USER_PROMPT     = "Enter your database user: "
+	DATABASE_NAME_PROMT      = "Enter your database name: "
+	DATABASE_PASSWORD_PROMPT = "Enter your database password: "
+	DATABASE_HOST_PROMPT     = "Enter your database host: "
+	DATABASE_SCHEMA_PROMPT   = "Enter your database schema name (e.g. public): "
+)
+
 const COLUMN_LIST_ORDER_QUERY string = `
 SELECT
     ordinal_position,
@@ -74,21 +82,10 @@ func main() {
 		connection_string = "user=postgres dbname=postgres sslmode=disable password=123 host=localhost"
 	} else {
 
-		fmt.Print("Enter your database user: ")
-
-		dbUser, _ := read_user_input()
-
-		fmt.Print("Enter your database name: ")
-
-		dbName, _ := read_user_input()
-
-		fmt.Printf("Enter your database password: ")
-
-		dbPwd, _ := read_user_input()
-
-		fmt.Printf("Enter your database host: ")
-
-		dbHost, _ := read_user_input()
+		dbUser, _ := prompt_user_input(DATABASE_USER_PROMPT)
+		dbName, _ := prompt_user_input(DATABASE_NAME_PROMT)
+		dbPwd, _ := prompt_user_input(DATABASE_PASSWORD_PROMPT)
+		dbHost, _ := prompt_user_input(DATABASE_HOST_PROMPT)
 
 		connection_string = fmt.Sprintf("user=%s dbname=%s sslmode=disable password=%s host=%s", dbUser, dbName, dbPwd, dbHost)
 	}
@@ -106,9 +103,7 @@ func main() {
 
 	defer db.Close()
 
-	fmt.Printf("Enter your database schema name (e.g. public): ")
-
-	db_schema, _ := read_user_input()
+	db_schema, _ := prompt_user_input(DATABASE_SCHEMA_PROMPT)
 
 	tables, err := db.Queryx(fmt.Sprintf(ALL_TABLES_IN_SCHEMA_QUERY, strings.TrimSuffix(db_schema, "\n")))
 	if err != nil {
@@ -147,6 +142,8 @@ func main() {
 	}
 }
 
-func read_user_input() (string, error) {
+func prompt_user_input(prompt_text string) (string, error) {
+	fmt.Print(prompt_text)
+
 	return user_input_reader.ReadString('\n')
 }
