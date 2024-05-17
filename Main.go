@@ -2,15 +2,24 @@ package main
 
 import (
 	"bufio"
+	"encoding/csv"
 	"flag"
 	"fmt"
 	"log"
 	"os"
+	"sort"
 	"strings"
 
 	"github.com/jmoiron/sqlx"
 	_ "github.com/lib/pq"
 )
+
+type ColumnInfo struct {
+	OrdinalPosition int
+	ColumnName      string
+	DataType        string
+	IsNullable      string
+}
 
 const (
 	DATABASE_USER_PROMPT     = "Enter your database user: "
@@ -24,7 +33,8 @@ const COLUMN_LIST_ORDER_QUERY string = `
 SELECT
     ordinal_position,
     column_name,
-    data_type
+    data_type,
+    is_nullable
 FROM
     information_schema.columns
 WHERE
@@ -112,6 +122,7 @@ func main() {
 
 	defer tables.Close()
 
+	var column_list []ColumnInfo
 	for tables.Next() {
 		var table_name string
 		if err := tables.Scan(&table_name); err != nil {
@@ -126,19 +137,72 @@ func main() {
 
 		fmt.Println("Ordinal Position\tColumn Name\tData Type") // Just for testing purposes
 		for columns.Next() {
-			var ordinal_position int
-			var column_name string
-			var data_type string
-			if err := columns.Scan(&ordinal_position, &column_name, &data_type); err != nil {
+			var col_info ColumnInfo
+			if err := columns.Scan(&col_info.OrdinalPosition, &col_info.ColumnName, &col_info.DataType, &col_info.IsNullable); err != nil {
 				log.Fatalln(err)
 			}
-			fmt.Printf("%d\t\t%s\t\t%s\n", ordinal_position, column_name, data_type) // Just for testing purposes
+			// fmt.Printf("%d\t\t%s\t\t%s\n", ordinal_position, column_name, data_type) // Just for testing purposes
+			column_list = append(column_list, col_info)
 		}
 
 		if err := columns.Err(); err != nil {
 			log.Fatalln(err)
 		}
 
+		sort.SliceStable(column_list, func(i, j int) bool {
+			if column_list[i].IsNullable != column_list[j].IsNullable {
+				return column_list[i].IsNullable == "NO"
+			}
+
+			typeSize := func(dataType string) int {
+				switch dataType {
+				case "bigint":
+					return 8
+				case "integer":
+					return 4
+				case "smallint":
+					return 2
+				case "boolean":
+					return 1
+				case "real":
+					return 4
+				case "double precision":
+					return 8
+				case "data":
+					return 4
+				case "timestamp without time zone", "timestamp with time zone":
+					return 8
+				case "text", "varchar", "bytea":
+					return 10
+				default:
+					return 10
+				}
+			}
+			return typeSize(column_list[i].DataType) > typeSize(column_list[j].DataType)
+		})
+
+		file, err := os.Create("column_order_report.csv")
+		if err != nil {
+			log.Fatal("Unable to create file: ", err)
+		}
+
+		defer file.Close()
+
+		writer := csv.NewWriter(file)
+		defer writer.Flush()
+
+		writer.Write([]string{"Ordinal Position", "Column Name", "Data Type", "Nullable"})
+
+		for _, col := range column_list {
+			writer.Write([]string{
+				fmt.Sprint(col.OrdinalPosition),
+				col.ColumnName,
+				col.DataType,
+				col.IsNullable,
+			})
+		}
+
+		fmt.Println("CSV generated.")
 	}
 }
 
