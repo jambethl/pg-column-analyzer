@@ -122,7 +122,12 @@ func main() {
 
 	defer tables.Close()
 
-	var column_list []ColumnInfo
+	dir_err := os.MkdirAll("reports", 0o755)
+	if dir_err != nil {
+		fmt.Println(dir_err)
+		return
+	}
+
 	for tables.Next() {
 		var table_name string
 		if err := tables.Scan(&table_name); err != nil {
@@ -135,13 +140,12 @@ func main() {
 		}
 		defer columns.Close()
 
-		fmt.Println("Ordinal Position\tColumn Name\tData Type") // Just for testing purposes
+		var column_list []ColumnInfo
 		for columns.Next() {
 			var col_info ColumnInfo
 			if err := columns.Scan(&col_info.OrdinalPosition, &col_info.ColumnName, &col_info.DataType, &col_info.IsNullable); err != nil {
 				log.Fatalln(err)
 			}
-			// fmt.Printf("%d\t\t%s\t\t%s\n", ordinal_position, column_name, data_type) // Just for testing purposes
 			column_list = append(column_list, col_info)
 		}
 
@@ -181,7 +185,8 @@ func main() {
 			return typeSize(column_list[i].DataType) > typeSize(column_list[j].DataType)
 		})
 
-		file, err := os.Create("column_order_report.csv")
+		report_name := fmt.Sprintf("reports/%s_report.csv", table_name)
+		file, err := os.Create(report_name)
 		if err != nil {
 			log.Fatal("Unable to create file: ", err)
 		}
@@ -202,7 +207,7 @@ func main() {
 			})
 		}
 
-		fmt.Println("CSV generated.")
+		fmt.Printf("Report %s generated successfully.\n", report_name)
 	}
 }
 
