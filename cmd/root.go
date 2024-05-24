@@ -3,12 +3,39 @@ package cmd
 import (
 	"fmt"
 	"log"
+	"main/pkg/types"
+	"os"
+	"sort"
 
 	"main/pkg/db"
 	"main/pkg/report"
 
 	"github.com/spf13/cobra"
 )
+
+const ColumnListOrderQuery string = `
+SELECT
+    ordinal_position,
+    column_name,
+    data_type,
+    is_nullable
+FROM
+    information_schema.columns
+WHERE
+    table_schema = 'public'
+    AND table_name = '%s'
+ORDER BY
+    ordinal_position;
+`
+
+const AllTablesInSchemaQuery string = `
+SELECT
+    table_name
+FROM
+    information_schema.tables
+WHERE
+    table_schema = 'public';
+`
 
 var (
 	dbName     string
@@ -46,16 +73,92 @@ func init() {
 }
 
 func configureDatabase() {
-	dbConfig := db.Config{}
+	dbConfig := db.Config{
+		DBName:   dbName,
+		UserName: userName,
+		Password: password,
+		Host:     host,
+		Schema:   schemaName,
+	}
 
 	connection, err := db.Connect(dbConfig)
 	if err != nil {
-		log.Fatalf()
+		log.Fatalf("Failed to connect to the database: %v", err)
 	}
 
 	defer connection.Close()
 
-	if err := report.GenerateReport(connection); err != nil {
-		log.Fatalf()
+	tables, err := connection.Query(fmt.Sprintf(AllTablesInSchemaQuery))
+	if err != nil {
+		log.Fatalln(err)
+	}
+
+	defer tables.Close()
+
+	dirErr := os.MkdirAll("reports", 0o755)
+	if dirErr != nil {
+		fmt.Println(dirErr)
+		return
+	}
+
+	for tables.Next() {
+		var tableName string
+		if err := tables.Scan(&tableName); err != nil {
+			log.Fatalln(err)
+		}
+
+		columns, err := connection.Query(fmt.Sprintf(ColumnListOrderQuery, tableName))
+		if err != nil {
+			log.Fatalln(err)
+		}
+		defer columns.Close()
+
+		var columnList []types.ColumnInfo
+		for columns.Next() {
+			var colInfo types.ColumnInfo
+			if err := columns.Scan(&colInfo.OrdinalPosition, &colInfo.ColumnName, &colInfo.DataType, &colInfo.IsNullable); err != nil {
+				log.Fatalln(err)
+			}
+			columnList = append(columnList, colInfo)
+		}
+
+		if err := columns.Err(); err != nil {
+			log.Fatalln(err)
+		}
+
+		sort.SliceStable(columnList, func(i, j int) bool {
+			if columnList[i].IsNullable != columnList[j].IsNullable {
+				return columnList[i].IsNullable == "NO"
+			}
+
+			typeSize := func(dataType string) int {
+				switch dataType {
+				case "bigint":
+					return 8
+				case "integer":
+					return 4
+				case "smallint":
+					return 2
+				case "boolean":
+					return 1
+				case "real":
+					return 4
+				case "double precision":
+					return 8
+				case "data":
+					return 4
+				case "timestamp without time zone", "timestamp with time zone":
+					return 8
+				case "text", "varchar", "bytea":
+					return 10
+				default:
+					return 10
+				}
+			}
+			return typeSize(columnList[i].DataType) > typeSize(columnList[j].DataType)
+		})
+		if err := report.GenerateReport(columnList, tableName); err != nil {
+			log.Fatalf("Failed to generate report: %v", err)
+		}
 	}
 }

@@ -4,10 +4,12 @@ import (
 	"encoding/csv"
 	"fmt"
 	"log"
+	"main/pkg/types"
 	"os"
+	"strconv"
 )
 
-func GenerateReport(columnList []ColumnInfo, tableName string) {
+func GenerateReport(columnList []types.ColumnInfo, tableName string) {
 	reportName := fmt.Sprintf("reports/%s_report.csv", tableName)
 	file, err := os.Create(reportName)
 	if err != nil {
@@ -23,7 +25,7 @@ func GenerateReport(columnList []ColumnInfo, tableName string) {
 
 	for _, col := range columnList {
 		writer.Write([]string{
-			col.OrdinalPosition,
+			strconv.Itoa(col.OrdinalPosition),
 			col.ColumnName,
 			col.DataType,
 			col.IsNullable,
