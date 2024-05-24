@@ -22,14 +22,14 @@ type ColumnInfo struct {
 }
 
 const (
-	DATABASE_USER_PROMPT     = "Enter your database user: "
-	DATABASE_NAME_PROMT      = "Enter your database name: "
-	DATABASE_PASSWORD_PROMPT = "Enter your database password: "
-	DATABASE_HOST_PROMPT     = "Enter your database host: "
-	DATABASE_SCHEMA_PROMPT   = "Enter your database schema name (e.g. public): "
+	DatabaseUserPrompt     = "Enter your database user: "
+	DatabaseNamePrompt     = "Enter your database name: "
+	DatabasePasswordPrompt = "Enter your database password: "
+	DatabaseHostPrompt     = "Enter your database host: "
+	DatabaseSchemaPrompt   = "Enter your database schema name (e.g. public): "
 )
 
-const COLUMN_LIST_ORDER_QUERY string = `
+const ColumnListOrderQuery string = `
 SELECT
     ordinal_position,
     column_name,
@@ -44,7 +44,7 @@ ORDER BY
     ordinal_position;
 `
 
-const ALL_TABLES_IN_SCHEMA_QUERY string = `
+const AllTablesInSchemaQuery string = `
 SELECT
     table_name
 FROM
@@ -73,34 +73,34 @@ var data_type_byte_map = map[int]int{
 	SERIAL:      4,
 }
 
-var user_input_reader *bufio.Reader
+var userInputReader *bufio.Reader
 
 func init() {
-	user_input_reader = bufio.NewReader(os.Stdin)
+	userInputReader = bufio.NewReader(os.Stdin)
 }
 
 func main() {
-	default_flag := flag.Bool("defaultConfig", false, "Whether to use default Postgres connection properties")
+	defaultFlag := flag.Bool("defaultConfig", false, "Whether to use default Postgres connection properties")
 
 	flag.Parse()
 
-	default_value := *default_flag
+	defaultValue := *defaultFlag
 
-	var connection_string string
-	if default_value {
+	var connectionString string
+	if defaultValue {
 		fmt.Println("Running with default Postgres connection properties")
-		connection_string = "user=postgres dbname=postgres sslmode=disable password=123 host=localhost"
+		connectionString = "user=postgres dbname=postgres sslmode=disable password=123 host=localhost"
 	} else {
 
-		dbUser, _ := prompt_user_input(DATABASE_USER_PROMPT)
-		dbName, _ := prompt_user_input(DATABASE_NAME_PROMT)
-		dbPwd, _ := prompt_user_input(DATABASE_PASSWORD_PROMPT)
-		dbHost, _ := prompt_user_input(DATABASE_HOST_PROMPT)
+		dbUser, _ := promptUserInput(DatabaseUserPrompt)
+		dbName, _ := promptUserInput(DatabaseNamePrompt)
+		dbPwd, _ := promptUserInput(DatabasePasswordPrompt)
+		dbHost, _ := promptUserInput(DatabaseHostPrompt)
 
-		connection_string = fmt.Sprintf("user=%s dbname=%s sslmode=disable password=%s host=%s", dbUser, dbName, dbPwd, dbHost)
+		connectionString = fmt.Sprintf("user=%s dbname=%s sslmode=disable password=%s host=%s", dbUser, dbName, dbPwd, dbHost)
 	}
 
-	db, err := sqlx.Connect("postgres", connection_string)
+	db, err := sqlx.Connect("postgres", connectionString)
 	if err != nil {
 		log.Fatalln(err)
 	}
@@ -113,49 +113,49 @@ func main() {
 
 	defer db.Close()
 
-	db_schema, _ := prompt_user_input(DATABASE_SCHEMA_PROMPT)
+	dbSchema, _ := promptUserInput(DatabaseSchemaPrompt)
 
-	tables, err := db.Queryx(fmt.Sprintf(ALL_TABLES_IN_SCHEMA_QUERY, strings.TrimSuffix(db_schema, "\n")))
+	tables, err := db.Queryx(fmt.Sprintf(AllTablesInSchemaQuery, strings.TrimSuffix(dbSchema, "\n")))
 	if err != nil {
 		log.Fatalln(err)
 	}
 
 	defer tables.Close()
 
-	dir_err := os.MkdirAll("reports", 0o755)
-	if dir_err != nil {
-		fmt.Println(dir_err)
+	dirErr := os.MkdirAll("reports", 0o755)
+	if dirErr != nil {
+		fmt.Println(dirErr)
 		return
 	}
 
 	for tables.Next() {
-		var table_name string
-		if err := tables.Scan(&table_name); err != nil {
+		var tableName string
+		if err := tables.Scan(&tableName); err != nil {
 			log.Fatalln(err)
 		}
 
-		columns, err := db.Queryx(fmt.Sprintf(COLUMN_LIST_ORDER_QUERY, strings.TrimSuffix(db_schema, "\n"), table_name))
+		columns, err := db.Queryx(fmt.Sprintf(ColumnListOrderQuery, strings.TrimSuffix(dbSchema, "\n"), tableName))
 		if err != nil {
 			log.Fatalln(err)
 		}
 		defer columns.Close()
 
-		var column_list []ColumnInfo
+		var columnList []ColumnInfo
 		for columns.Next() {
-			var col_info ColumnInfo
-			if err := columns.Scan(&col_info.OrdinalPosition, &col_info.ColumnName, &col_info.DataType, &col_info.IsNullable); err != nil {
+			var colInfo ColumnInfo
+			if err := columns.Scan(&colInfo.OrdinalPosition, &colInfo.ColumnName, &colInfo.DataType, &colInfo.IsNullable); err != nil {
 				log.Fatalln(err)
 			}
-			column_list = append(column_list, col_info)
+			columnList = append(columnList, colInfo)
 		}
 
 		if err := columns.Err(); err != nil {
 			log.Fatalln(err)
 		}
 
-		sort.SliceStable(column_list, func(i, j int) bool {
-			if column_list[i].IsNullable != column_list[j].IsNullable {
-				return column_list[i].IsNullable == "NO"
+		sort.SliceStable(columnList, func(i, j int) bool {
+			if columnList[i].IsNullable != columnList[j].IsNullable {
+				return columnList[i].IsNullable == "NO"
 			}
 
 			typeSize := func(dataType string) int {
@@ -182,11 +182,11 @@ func main() {
 					return 10
 				}
 			}
-			return typeSize(column_list[i].DataType) > typeSize(column_list[j].DataType)
+			return typeSize(columnList[i].DataType) > typeSize(columnList[j].DataType)
 		})
 
-		report_name := fmt.Sprintf("reports/%s_report.csv", table_name)
-		file, err := os.Create(report_name)
+		reportName := fmt.Sprintf("reports/%s_report.csv", tableName)
+		file, err := os.Create(reportName)
 		if err != nil {
 			log.Fatal("Unable to create file: ", err)
 		}
@@ -198,7 +198,7 @@ func main() {
 
 		writer.Write([]string{"Ordinal Position", "Column Name", "Data Type", "Nullable"})
 
-		for _, col := range column_list {
+		for _, col := range columnList {
 			writer.Write([]string{
 				fmt.Sprint(col.OrdinalPosition),
 				col.ColumnName,
@@ -207,12 +207,12 @@ func main() {
 			})
 		}
 
-		fmt.Printf("Report %s generated successfully.\n", report_name)
+		fmt.Printf("Report %s generated successfully.\n", reportName)
 	}
 }
 
-func prompt_user_input(prompt_text string) (string, error) {
-	fmt.Print(prompt_text)
+func promptUserInput(promptText string) (string, error) {
+	fmt.Print(promptText)
 
-	return user_input_reader.ReadString('\n')
+	return userInputReader.ReadString('\n')
 }

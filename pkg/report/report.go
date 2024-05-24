@@ -7,11 +7,11 @@ import (
 	"os"
 )
 
-func GenerateReport(column_list []ColumnInfo, table_name string) {
-	report_name := fmt.Sprintf("reports/%s_report.csv", table_name)
-	file, err := os.Create(report_name)
+func GenerateReport(columnList []ColumnInfo, tableName string) {
+	reportName := fmt.Sprintf("reports/%s_report.csv", tableName)
+	file, err := os.Create(reportName)
 	if err != nil {
-		log.Fatalf("Unable to create report: %s", report_name)
+		log.Fatalf("Unable to create report: %s", reportName)
 	}
 
 	defer file.Close()
@@ -21,7 +21,7 @@ func GenerateReport(column_list []ColumnInfo, table_name string) {
 
 	writer.Write([]string{"Ordinal Position", "Column Name", "Data Type", "Nullable"})
 
-	for _, col := range column_list {
+	for _, col := range columnList {
 		writer.Write([]string{
 			col.OrdinalPosition,
 			col.ColumnName,
@@ -30,5 +30,5 @@ func GenerateReport(column_list []ColumnInfo, table_name string) {
 		})
 	}
 
-	fmt.Printf("Report %s generated successfully.\n", report_name)
+	fmt.Printf("Report %s generated successfully.\n", reportName)
 }
