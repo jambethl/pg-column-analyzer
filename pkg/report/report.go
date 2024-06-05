@@ -32,7 +32,8 @@ func GenerateReport(columnList []types.ColumnInfo, tableName string) error {
 		})
 	}
 
-	fmt.Printf("Report %s generated successfully.\n", reportName)
+	dir, err := os.Getwd()
+	fmt.Printf("Report %s/%s generated successfully.\n", dir, reportName)
 
 	return nil
 }
