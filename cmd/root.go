@@ -127,35 +127,7 @@ func configureDatabase() {
 		}
 
 		sort.SliceStable(columnList, func(i, j int) bool {
-			if columnList[i].IsNullable != columnList[j].IsNullable {
-				return columnList[i].IsNullable == "NO"
-			}
-
-			typeSize := func(dataType string) int {
-				switch dataType {
-				case "bigint":
-					return 8
-				case "integer":
-					return 4
-				case "smallint":
-					return 2
-				case "boolean":
-					return 1
-				case "real":
-					return 4
-				case "double precision":
-					return 8
-				case "data":
-					return 4
-				case "timestamp without time zone", "timestamp with time zone":
-					return 8
-				case "text", "varchar", "bytea":
-					return 10
-				default:
-					return 10
-				}
-			}
-			return typeSize(columnList[i].DataType) > typeSize(columnList[j].DataType)
+			return columnList[i].OrdinalPosition < columnList[j].OrdinalPosition
 		})
 		if err := report.GenerateReport(columnList, tableName); err != nil {
 			log.Fatalf("Failed to generate report: %v", err)
