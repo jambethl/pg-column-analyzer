@@ -9,7 +9,7 @@ import (
 	"strconv"
 )
 
-func GenerateReport(columnList []types.ColumnInfo, tableName string) {
+func GenerateReport(columnList []types.ColumnInfo, tableName string) error {
 	reportName := fmt.Sprintf("reports/%s_report.csv", tableName)
 	file, err := os.Create(reportName)
 	if err != nil {
@@ -33,4 +33,6 @@ func GenerateReport(columnList []types.ColumnInfo, tableName string) {
 	}
 
 	fmt.Printf("Report %s generated successfully.\n", reportName)
+
+	return nil
 }

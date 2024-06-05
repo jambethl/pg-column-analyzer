@@ -64,7 +64,7 @@ func init() {
 	rootCmd.PersistentFlags().StringVarP(&dbName, "database", "d", "", "Database name (required)")
 	rootCmd.PersistentFlags().StringVarP(&userName, "username", "u", "", "Username (required)")
 	rootCmd.PersistentFlags().StringVarP(&password, "password", "p", "", "Password (required)")
-	rootCmd.PersistentFlags().StringVarP(&host, "host", "h", "localhost", "Host")
+	rootCmd.PersistentFlags().StringVarP(&host, "host", "l", "localhost", "Host")
 	rootCmd.PersistentFlags().StringVarP(&schemaName, "schema", "s", "public", "Schema name")
 
 	rootCmd.MarkPersistentFlagRequired("database")
