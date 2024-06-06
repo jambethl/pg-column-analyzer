@@ -13,7 +13,7 @@ var dataTypeMap = map[string]string{
 	"smallint":                    "2 bytes",
 	"integer":                     "4 bytes",
 	"bigint":                      "8 bytes",
-	"boolean":                     "1 bytes",
+	"boolean":                     "1 byte",
 	"real":                        "4 bytes",
 	"double precision":            "8 bytes",
 	"date":                        "4 bytes",
