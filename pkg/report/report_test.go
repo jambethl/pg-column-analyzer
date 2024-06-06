@@ -19,9 +19,10 @@ func TestGenerateReport(t *testing.T) {
 
 	// Mock column data
 	columnList := []types.ColumnInfo{
-		{OrdinalPosition: 1, ColumnName: "id", DataType: "integer", IsNullable: "NO"},
-		{OrdinalPosition: 2, ColumnName: "name", DataType: "varchar", IsNullable: "YES"},
-		{OrdinalPosition: 3, ColumnName: "created_at", DataType: "timestamp with time zone", IsNullable: "NO"},
+		{OrdinalPosition: 1, ColumnName: "enabled", DataType: "boolean", IsNullable: "NO"},
+		{OrdinalPosition: 2, ColumnName: "age", DataType: "smallint", IsNullable: "NO"},
+		{OrdinalPosition: 3, ColumnName: "count", DataType: "integer", IsNullable: "NO"},
+		{OrdinalPosition: 4, ColumnName: "id", DataType: "bigint", IsNullable: "NO"},
 	}
 
 	// Set the current working directory to the temporary directory
@@ -67,9 +68,10 @@ func TestGenerateReport(t *testing.T) {
 	}
 
 	expectedRows := [][]string{
-		{"1", "id", "integer", "NO", "4 bytes", "", ""},
-		{"2", "name", "varchar", "YES", "10 bytes", "", ""},
-		{"3", "created_at", "timestamp with time zone", "NO", "8 bytes", "", ""},
+		{"1", "enabled", "boolean", "NO", "1", "1", "1"},
+		{"2", "age", "smallint", "NO", "2", "0", "2"},
+		{"3", "count", "integer", "NO", "4", "0", "3"},
+		{"4", "id", "bigint", "NO", "8", "0", "4"},
 	}
 
 	for i, expectedRow := range expectedRows {
