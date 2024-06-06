@@ -19,6 +19,7 @@ var dataTypeMap = map[string]string{
 	"date":                        "4 bytes",
 	"timestamp without time zone": "8 bytes",
 	"timestamp with time zone":    "8 bytes",
+	"uuid":                        "16 bytes",
 	"text":                        "10 bytes", // Variable size, often larger
 	"varchar":                     "10 bytes", // Variable size, often larger
 	"bytea":                       "10 bytes", // Variable size, often larger
