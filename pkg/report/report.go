@@ -46,6 +46,8 @@ func GenerateReport(columnList []types.ColumnInfo, tableName string) error {
 			col.DataType,
 			col.IsNullable,
 			dataTypeMap[col.DataType],
+			"",
+			"",
 		})
 	}
 
