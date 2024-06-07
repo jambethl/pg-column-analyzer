@@ -9,13 +9,12 @@ import (
 	"testing"
 )
 
+var expectedHeader = []string{"Ordinal Position", "Column Name", "Data Type", "Nullable", "Data Type Size (B)", "Wasted Padding", "Recommended Position"}
+
 func TestGenerateReport(t *testing.T) {
-	// Create a temporary directory for the report
+
 	tmpDir := t.TempDir()
-	reportDir := filepath.Join(tmpDir, "reports")
-	if err := os.Mkdir(reportDir, 0755); err != nil {
-		t.Fatalf("Failed to create reports directory: %v", err)
-	}
+	reportDir := createReportsDirectory(t, tmpDir)
 
 	// Mock column data
 	columnList := []types.ColumnInfo{
@@ -43,6 +42,40 @@ func TestGenerateReport(t *testing.T) {
 	}
 
 	// Verify the report file exists
+	rows := readFile(t, tableName, reportDir)
+
+	assertResult(t, rows, [][]string{
+		{"1", "enabled", "boolean", "NO", "1", "1", "1"},
+		{"2", "age", "smallint", "NO", "2", "0", "2"},
+		{"3", "count", "integer", "NO", "4", "0", "3"},
+		{"4", "id", "bigint", "NO", "8", "0", "4"},
+	})
+}
+
+func assertResult(t *testing.T, rows [][]string, expectedRows [][]string) {
+	// Verify the content of the report
+	if !equalSlices(rows[0], expectedHeader) {
+		t.Errorf("Header row mismatch. Expected %v, got %v", expectedHeader, rows[0])
+	}
+
+	for i, expectedRow := range expectedRows {
+		if !equalSlices(rows[i+1], expectedRow) {
+			t.Errorf("Row %d mismatch. Expected %v, got %v", i+1, expectedRow, rows[i+1])
+		}
+	}
+}
+
+func createReportsDirectory(t *testing.T, tmpDir string) string {
+	// Create a temporary directory for the report
+	reportDir := filepath.Join(tmpDir, "reports")
+	if err := os.Mkdir(reportDir, 0755); err != nil {
+		t.Fatalf("Failed to create reports directory: %v", err)
+	}
+	return reportDir
+}
+
+func readFile(t *testing.T, tableName string, reportDir string) [][]string {
+	// Verify the report file exists
 	reportPath := filepath.Join(reportDir, fmt.Sprintf("%s_report.csv", tableName))
 	if _, err := os.Stat(reportPath); os.IsNotExist(err) {
 		t.Fatalf("Report file does not exist: %s", reportPath)
@@ -53,32 +86,13 @@ func TestGenerateReport(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Failed to open report file: %v", err)
 	}
-	defer file.Close()
-
 	reader := csv.NewReader(file)
 	rows, err := reader.ReadAll()
 	if err != nil {
 		t.Fatalf("Failed to read report file: %v", err)
 	}
 
-	// Verify the content of the report
-	expectedHeader := []string{"Ordinal Position", "Column Name", "Data Type", "Nullable", "Data Type Size (B)", "Wasted Padding", "Recommended Position"}
-	if !equalSlices(rows[0], expectedHeader) {
-		t.Errorf("Header row mismatch. Expected %v, got %v", expectedHeader, rows[0])
-	}
-
-	expectedRows := [][]string{
-		{"1", "enabled", "boolean", "NO", "1", "1", "1"},
-		{"2", "age", "smallint", "NO", "2", "0", "2"},
-		{"3", "count", "integer", "NO", "4", "0", "3"},
-		{"4", "id", "bigint", "NO", "8", "0", "4"},
-	}
-
-	for i, expectedRow := range expectedRows {
-		if !equalSlices(rows[i+1], expectedRow) {
-			t.Errorf("Row %d mismatch. Expected %v, got %v", i+1, expectedRow, rows[i+1])
-		}
-	}
+	return rows
 }
 
 // Helper function to compare two slices
