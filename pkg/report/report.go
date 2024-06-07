@@ -6,6 +6,7 @@ import (
 	"log"
 	"main/pkg/types"
 	"os"
+	"sort"
 	"strconv"
 )
 
@@ -25,60 +26,72 @@ var dataTypeMap = map[string]int{
 	"bytea":                       10, // Variable size, often larger
 }
 
+func calculateWastedPadding(currentSize, nextSize int) int {
+	if nextSize == 0 {
+		return 0
+	}
+	return (nextSize - (currentSize % nextSize)) % nextSize
+}
+
 func GenerateReport(columnList []types.ColumnInfo, tableName string) error {
 	reportName := fmt.Sprintf("reports/%s_report.csv", tableName)
 	file, err := os.Create(reportName)
 	if err != nil {
 		log.Fatalf("Unable to create report: %s", reportName)
-		return err
 	}
 	defer file.Close()
 
 	writer := csv.NewWriter(file)
 	defer writer.Flush()
 
-	err = writer.Write([]string{"Ordinal Position", "Column Name", "Data Type", "Nullable", "Data Type Size (B)", "Wasted Padding", "Recommended Position"})
-	if err != nil {
-		return fmt.Errorf("failed to write header row: %v", err)
-	}
+	writer.Write([]string{"Ordinal Position", "Column Name", "Data Type", "Nullable", "Data Type Size (B)", "Wasted Padding", "Recommended Position"})
 
-	currentOffset := 0
+	// Sort columns to recommend optimal order
+	sortedColumnList := make([]types.ColumnInfo, len(columnList))
+	copy(sortedColumnList, columnList)
+	sort.SliceStable(sortedColumnList, func(i, j int) bool {
+		sizeI := dataTypeMap[sortedColumnList[i].DataType]
+		sizeJ := dataTypeMap[sortedColumnList[j].DataType]
+		return sizeI > sizeJ // Larger sizes come first
+	})
+
+	// Write current column order with padding information
 	for i, col := range columnList {
 		currentSize := dataTypeMap[col.DataType]
-		var wastedPadding int
-
+		var nextSize int
 		if i < len(columnList)-1 {
-			nextSize := dataTypeMap[columnList[i+1].DataType]
-			if nextSize != 0 {
-				wastedPadding = (currentSize - (currentOffset % nextSize)) % nextSize
-			} else {
-				wastedPadding = 0
-			}
+			nextSize = dataTypeMap[columnList[i+1].DataType]
 		} else {
-			wastedPadding = 0
+			nextSize = 0
 		}
+		wastedPadding := calculateWastedPadding(currentSize, nextSize)
+		recommendedPosition := findRecommendedPosition(col.ColumnName, sortedColumnList)
 
-		currentOffset += currentSize + wastedPadding
-
-		err := writer.Write([]string{
+		writer.Write([]string{
 			strconv.Itoa(col.OrdinalPosition),
 			col.ColumnName,
 			col.DataType,
 			col.IsNullable,
-			strconv.Itoa(dataTypeMap[col.DataType]),
+			strconv.Itoa(currentSize),
 			strconv.Itoa(wastedPadding),
-			strconv.Itoa(i + 1),
+			strconv.Itoa(recommendedPosition),
 		})
-		if err != nil {
-			return fmt.Errorf("failed to write data row: %v", err)
-		}
 	}
 
 	dir, err := os.Getwd()
 	if err != nil {
-		return err
+		log.Fatalf("Unable to get current directory: %v", err)
 	}
 	fmt.Printf("Report %s/%s generated successfully.\n", dir, reportName)
 
 	return nil
+}
+
+func findRecommendedPosition(columnName string, sortedColumnList []types.ColumnInfo) int {
+	for i, col := range sortedColumnList {
+		if col.ColumnName == columnName {
+			return i + 1
+		}
+	}
+	return -1
 }
