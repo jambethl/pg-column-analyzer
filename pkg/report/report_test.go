@@ -12,11 +12,6 @@ import (
 var expectedHeader = []string{"Ordinal Position", "Column Name", "Data Type", "Nullable", "Data Type Size (B)", "Wasted Padding", "Recommended Position"}
 
 func TestGenerateReport(t *testing.T) {
-
-	tmpDir := t.TempDir()
-	reportDir := createReportsDirectory(t, tmpDir)
-
-	// Mock column data
 	columnList := []types.ColumnInfo{
 		{OrdinalPosition: 1, ColumnName: "enabled", DataType: "boolean", IsNullable: "NO"},
 		{OrdinalPosition: 2, ColumnName: "age", DataType: "smallint", IsNullable: "NO"},
@@ -24,7 +19,52 @@ func TestGenerateReport(t *testing.T) {
 		{OrdinalPosition: 4, ColumnName: "id", DataType: "bigint", IsNullable: "NO"},
 	}
 
-	// Set the current working directory to the temporary directory
+	generateReportTest(t, columnList, [][]string{
+		{"1", "enabled", "boolean", "NO", "1", "1", "1"},
+		{"2", "age", "smallint", "NO", "2", "0", "2"},
+		{"3", "count", "integer", "NO", "4", "0", "3"},
+		{"4", "id", "bigint", "NO", "8", "0", "4"},
+	})
+}
+
+func TestGenerateReport_NullableColumns(t *testing.T) {
+	columnList := []types.ColumnInfo{
+		{OrdinalPosition: 1, ColumnName: "description", DataType: "text", IsNullable: "YES"},
+		{OrdinalPosition: 2, ColumnName: "price", DataType: "real", IsNullable: "YES"},
+	}
+
+	generateReportTest(t, columnList, [][]string{
+		{"1", "description", "text", "YES", "10", "2", "1"},
+		{"2", "price", "real", "YES", "4", "0", "2"},
+	})
+}
+
+func TestGenerateReport_SameDataType(t *testing.T) {
+	columnList := []types.ColumnInfo{
+		{OrdinalPosition: 1, ColumnName: "first_name", DataType: "varchar", IsNullable: "YES"},
+		{OrdinalPosition: 2, ColumnName: "last_name", DataType: "varchar", IsNullable: "YES"},
+	}
+
+	generateReportTest(t, columnList, [][]string{
+		{"1", "first_name", "varchar", "YES", "10", "0", "1"},
+		{"2", "last_name", "varchar", "YES", "10", "0", "2"},
+	})
+}
+
+func TestGenerateReport_SingleColumn(t *testing.T) {
+	columnList := []types.ColumnInfo{
+		{OrdinalPosition: 1, ColumnName: "id", DataType: "uuid", IsNullable: "NO"},
+	}
+
+	generateReportTest(t, columnList, [][]string{
+		{"1", "id", "uuid", "NO", "16", "0", "1"},
+	})
+}
+
+func generateReportTest(t *testing.T, columnList []types.ColumnInfo, expected [][]string) {
+	tmpDir := t.TempDir()
+	reportDir := createReportsDirectory(t, tmpDir)
+
 	origDir, err := os.Getwd()
 	if err != nil {
 		t.Fatalf("Failed to get current directory: %v", err)
@@ -44,12 +84,7 @@ func TestGenerateReport(t *testing.T) {
 	// Verify the report file exists
 	rows := readFile(t, tableName, reportDir)
 
-	assertResult(t, rows, [][]string{
-		{"1", "enabled", "boolean", "NO", "1", "1", "1"},
-		{"2", "age", "smallint", "NO", "2", "0", "2"},
-		{"3", "count", "integer", "NO", "4", "0", "3"},
-		{"4", "id", "bigint", "NO", "8", "0", "4"},
-	})
+	assertResult(t, rows, expected)
 }
 
 func assertResult(t *testing.T, rows [][]string, expectedRows [][]string) {
