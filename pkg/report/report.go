@@ -20,10 +20,10 @@ var dataTypeMap = map[string]int{
 	"double precision":            8,
 	"timestamp without time zone": 8,
 	"timestamp with time zone":    8,
-	"uuid":                        16,
 	"bytea":                       10, // Variable size, often larger
 	"text":                        10, // Variable size, often larger
 	"varchar":                     10, // Variable size, often larger
+	"uuid":                        16,
 }
 
 func GenerateReport(columnList []types.ColumnInfo, tableName string) error {
