@@ -26,13 +26,6 @@ var dataTypeMap = map[string]int{
 	"bytea":                       10, // Variable size, often larger
 }
 
-func calculateWastedPadding(currentSize, nextSize int) int {
-	if nextSize == 0 {
-		return 0
-	}
-	return (nextSize - (currentSize % nextSize)) % nextSize
-}
-
 func GenerateReport(columnList []types.ColumnInfo, tableName string) error {
 	reportName := fmt.Sprintf("reports/%s_report.csv", tableName)
 	file, err := os.Create(reportName)
@@ -85,6 +78,13 @@ func GenerateReport(columnList []types.ColumnInfo, tableName string) error {
 	fmt.Printf("Report %s/%s generated successfully.\n", dir, reportName)
 
 	return nil
+}
+
+func calculateWastedPadding(currentSize, nextSize int) int {
+	if nextSize == 0 {
+		return 0
+	}
+	return (nextSize - (currentSize % nextSize)) % nextSize
 }
 
 func findRecommendedPosition(columnName string, sortedColumnList []types.ColumnInfo) int {
