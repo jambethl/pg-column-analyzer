@@ -11,19 +11,19 @@ import (
 )
 
 var dataTypeMap = map[string]int{
-	"smallint":                    2,
-	"integer":                     4,
-	"bigint":                      8,
 	"boolean":                     1,
-	"real":                        4,
-	"double precision":            8,
+	"smallint":                    2,
 	"date":                        4,
+	"integer":                     4,
+	"real":                        4,
+	"bigint":                      8,
+	"double precision":            8,
 	"timestamp without time zone": 8,
 	"timestamp with time zone":    8,
 	"uuid":                        16,
+	"bytea":                       10, // Variable size, often larger
 	"text":                        10, // Variable size, often larger
 	"varchar":                     10, // Variable size, often larger
-	"bytea":                       10, // Variable size, often larger
 }
 
 func GenerateReport(columnList []types.ColumnInfo, tableName string) error {
