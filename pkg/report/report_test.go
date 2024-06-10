@@ -79,19 +79,19 @@ func TestGenerateReport_AllDataTypes(t *testing.T) {
 	columnList := []types.ColumnInfo{
 		{OrdinalPosition: 1, ColumnName: "id", DataType: "smallint", IsNullable: "NO"},
 		{OrdinalPosition: 2, ColumnName: "status", DataType: "boolean", IsNullable: "NO"},
-		{OrdinalPosition: 3, ColumnName: "created_at", DataType: "timestamp without time zone", IsNullable: "YES"},
+		{OrdinalPosition: 3, ColumnName: "created_at", DataType: "timestamp without time zone", IsNullable: "NO"},
 		{OrdinalPosition: 4, ColumnName: "score", DataType: "double precision", IsNullable: "YES"},
 		{OrdinalPosition: 5, ColumnName: "unique_id", DataType: "uuid", IsNullable: "NO"},
 		{OrdinalPosition: 6, ColumnName: "data", DataType: "bytea", IsNullable: "YES"},
 	}
 
 	generateReportTest(t, columnList, [][]string{
-		{"1", "id", "smallint", "NO", "2", "0", "4"},
+		{"1", "id", "smallint", "NO", "2", "0", "5"},
 		{"2", "status", "boolean", "NO", "1", "7", "6"},
-		{"3", "created_at", "timestamp without time zone", "NO", "8", "0", "2"},
-		{"4", "score", "double precision", "YES", "8", "8", "3"},
-		{"5", "unique_id", "uuid", "YES", "16", "4", "1"},
-		{"6", "data", "bytea", "YES", "10", "0", "5"},
+		{"3", "created_at", "timestamp without time zone", "NO", "8", "0", "3"},
+		{"4", "score", "double precision", "YES", "8", "8", "4"},
+		{"5", "unique_id", "uuid", "NO", "16", "4", "1"},
+		{"6", "data", "bytea", "YES", "10", "0", "2"},
 	})
 }
 
