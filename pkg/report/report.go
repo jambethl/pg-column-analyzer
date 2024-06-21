@@ -4,7 +4,7 @@ import (
 	"encoding/csv"
 	"fmt"
 	"log"
-	"main/pkg/types"
+	"main/pkg/common"
 	"os"
 	"sort"
 	"strconv"
@@ -26,7 +26,7 @@ var dataTypeMap = map[string]int{
 	"uuid":                        16,
 }
 
-func GenerateReport(columnList []types.ColumnInfo, tableName string) error {
+func GenerateReport(columnList []common.ColumnInfo, tableName string) error {
 	reportName := fmt.Sprintf("reports/%s_report.csv", tableName)
 	file, err := os.Create(reportName)
 	if err != nil {
@@ -37,10 +37,10 @@ func GenerateReport(columnList []types.ColumnInfo, tableName string) error {
 	writer := csv.NewWriter(file)
 	defer writer.Flush()
 
-	writer.Write([]string{"Ordinal Position", "Column Name", "Data Type", "Nullable", "Data Type Size (B)", "Wasted Padding Per Entry", "Recommended Position"})
+	writer.Write([]string{"Ordinal Position", "Column Name", "Data Type", "Nullable", "Data Type Size (B)", "Wasted Padding Per Entry", "Recommended Position", "Total Wasted Space"})
 
 	// Sort columns to recommend optimal order
-	sortedColumnList := make([]types.ColumnInfo, len(columnList))
+	sortedColumnList := make([]common.ColumnInfo, len(columnList))
 	copy(sortedColumnList, columnList)
 	sort.SliceStable(sortedColumnList, func(i, j int) bool {
 		sizeI := dataTypeMap[sortedColumnList[i].DataType]
@@ -68,6 +68,7 @@ func GenerateReport(columnList []types.ColumnInfo, tableName string) error {
 			strconv.Itoa(currentSize),
 			strconv.Itoa(wastedPadding),
 			strconv.Itoa(recommendedPosition),
+			strconv.Itoa(col.EntryCount * wastedPadding),
 		})
 	}
 
@@ -87,7 +88,7 @@ func calculateWastedPadding(currentSize, nextSize int) int {
 	return (nextSize - (currentSize % nextSize)) % nextSize
 }
 
-func findRecommendedPosition(columnName string, sortedColumnList []types.ColumnInfo) int {
+func findRecommendedPosition(columnName string, sortedColumnList []common.ColumnInfo) int {
 	for i, col := range sortedColumnList {
 		if col.ColumnName == columnName {
 			return i + 1

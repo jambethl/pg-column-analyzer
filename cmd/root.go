@@ -1,9 +1,11 @@
 package cmd
 
 import (
+	"database/sql"
 	"fmt"
 	"log"
-	"main/pkg/types"
+	"main/pkg/common"
+	_ "main/pkg/common"
 	"os"
 	"sort"
 
@@ -26,6 +28,10 @@ WHERE
     AND table_name = '%s'
 ORDER BY
     ordinal_position;
+`
+
+const ColumnCountQuery string = `
+SELECT COUNT('%s') FROM '%s'
 `
 
 const AllTablesInSchemaQuery string = `
@@ -113,12 +119,13 @@ func configureDatabase() {
 		}
 		defer columns.Close()
 
-		var columnList []types.ColumnInfo
+		var columnList []common.ColumnInfo
 		for columns.Next() {
-			var colInfo types.ColumnInfo
+			var colInfo common.ColumnInfo
 			if err := columns.Scan(&colInfo.OrdinalPosition, &colInfo.ColumnName, &colInfo.DataType, &colInfo.IsNullable); err != nil {
 				log.Fatalln(err)
 			}
+			colInfo.EntryCount = calculateTotalEntries(colInfo.ColumnName, tableName, connection)
 			columnList = append(columnList, colInfo)
 		}
 
@@ -133,4 +140,14 @@ func configureDatabase() {
 			log.Fatalf("Failed to generate report: %v", err)
 		}
 	}
+}
+
+func calculateTotalEntries(columnName string, tableName string, connection *sql.DB) int {
+	var count int
+	err := connection.QueryRow(fmt.Sprintf(ColumnCountQuery, columnName, tableName)).Scan(&count)
+	if err != nil {
+		log.Fatalln(err)
+	}
+	return count
+
 }
