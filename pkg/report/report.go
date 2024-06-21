@@ -37,7 +37,7 @@ func GenerateReport(columnList []types.ColumnInfo, tableName string) error {
 	writer := csv.NewWriter(file)
 	defer writer.Flush()
 
-	writer.Write([]string{"Ordinal Position", "Column Name", "Data Type", "Nullable", "Data Type Size (B)", "Wasted Padding", "Recommended Position"})
+	writer.Write([]string{"Ordinal Position", "Column Name", "Data Type", "Nullable", "Data Type Size (B)", "Wasted Padding Per Entry", "Recommended Position"})
 
 	// Sort columns to recommend optimal order
 	sortedColumnList := make([]types.ColumnInfo, len(columnList))

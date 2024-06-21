@@ -9,7 +9,7 @@ import (
 	"testing"
 )
 
-var expectedHeader = []string{"Ordinal Position", "Column Name", "Data Type", "Nullable", "Data Type Size (B)", "Wasted Padding", "Recommended Position"}
+var expectedHeader = []string{"Ordinal Position", "Column Name", "Data Type", "Nullable", "Data Type Size (B)", "Wasted Padding Per Entry", "Recommended Position"}
 
 func TestGenerateReport(t *testing.T) {
 	columnList := []types.ColumnInfo{
