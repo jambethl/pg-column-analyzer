@@ -31,7 +31,7 @@ ORDER BY
 `
 
 const ColumnCountQuery string = `
-SELECT COUNT('%s') FROM '%s'
+SELECT COUNT('%s') FROM %s;
 `
 
 const AllTablesInSchemaQuery string = `
