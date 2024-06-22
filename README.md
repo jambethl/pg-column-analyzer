@@ -25,6 +25,17 @@ this alignment padding adds up.
 - Analyzes the column order and calculates the space wasted due to inefficient column order definitions
 - Generates a CSV report with the optimal column order and space-saving suggestions.
 
+### Example output
+| Ordinal Position | Column Name   | Data Type                   | Nullable | Data Type Size (B) | Wasted Padding Per Entry | Recommended Position | Total Wasted Space |
+|------------------|---------------|-----------------------------|----------|--------------------|--------------------------|----------------------|--------------------|
+| 1                | id            | bigint                      | NO       | 8                  | 8                        | 4                    | 13888              |
+| 2                | post_uid      | uuid                        | NO       | 16                 | 0                        | 1                    | 0                  |
+| 3                | author_uid    | uuid                        | NO       | 16                 | 4                        | 2                    | 6944               |
+| 4                | content       | text                        | NO       | 10                 | 6                        | 3                    | 10416              |
+| 5                | created_at    | timestamp without timezone  | NO       | 8                  | 0                        | 5                    | 0                  |
+| 6                | like_count    | integer                     | NO       | 4                  | 0                        | 6                    | 0                  |
+| 7                | comment_count | integer                     | NO       | 4                  | 0                        | 7                    | 0                  |
+
 ## Running
 There are five supported optional arguments:
 * Database Name
