@@ -24,3 +24,37 @@ this alignment padding adds up.
 - Connects to your PostgreSQL instance, iterating through its tables in the specified schema
 - Analyzes the column order and calculates the space wasted due to inefficient column order definitions
 - Generates a CSV report with the optimal column order and space-saving suggestions.
+
+## Running
+There are five supported optional arguments:
+* Database Name
+  * name: `database`
+  * shorthand: `d`
+  * default: `postgres`
+* Username
+  * name: `username`
+  * shorthand: `u`
+  * default: `postgres`
+* Password
+  * name: `password`
+  * shorthand: `p`
+  * default: `123`
+* Host
+  * name: `host`
+  * shorthand: `l`
+  * default: `localhost`
+* Schema Name
+  * name: `schema`
+  * shorthand: `s`
+  * default: `public`
+
+```sh
+go run main.go
+```
+The above will run the program with the following default values of the above five optional arguments.
+
+To run the program with custom arguments:
+
+```sh
+go run main.go -d postgres -u postgres -p 123 -l localhost -s public
+```
