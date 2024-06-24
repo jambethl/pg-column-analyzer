@@ -18,7 +18,7 @@ const (
 	ColumnListOrderQuery = `
 		SELECT ordinal_position, column_name, data_type, is_nullable
 		FROM information_schema.columns
-		WHERE table_schema = 'public' AND table_name = '%s'
+		WHERE table_schema = '%s' AND table_name = '%s'
 		ORDER BY ordinal_position;`
 
 	ColumnCountQuery = `SELECT COUNT('%s') FROM %s;`
@@ -26,8 +26,7 @@ const (
 	AllTablesInSchemaQuery = `
 		SELECT table_name
 		FROM information_schema.tables
-		WHERE table_schema = 'public';
-`
+		WHERE table_schema = '%s';`
 )
 
 var (
@@ -77,7 +76,7 @@ func configureDatabase() {
 
 	defer connection.Close()
 
-	tables, err := connection.Query(fmt.Sprintf(AllTablesInSchemaQuery))
+	tables, err := connection.Query(fmt.Sprintf(AllTablesInSchemaQuery, dbConfig.Schema))
 	if err != nil {
 		log.Fatalln(err)
 	}
@@ -96,7 +95,7 @@ func configureDatabase() {
 			log.Fatalln(err)
 		}
 
-		columns, err := connection.Query(fmt.Sprintf(ColumnListOrderQuery, tableName))
+		columns, err := connection.Query(fmt.Sprintf(ColumnListOrderQuery, dbConfig.Schema, tableName))
 		if err != nil {
 			log.Fatalln(err)
 		}
