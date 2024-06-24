@@ -1,12 +1,14 @@
 package cmd
 
 import (
+	"context"
 	"database/sql"
 	"fmt"
 	"log"
 	"main/pkg/common"
 	"os"
 	"sort"
+	"time"
 
 	"main/pkg/db"
 	"main/pkg/report"
@@ -76,60 +78,94 @@ func configureDatabase() {
 
 	defer connection.Close()
 
-	tables, err := connection.Query(fmt.Sprintf(AllTablesInSchemaQuery, dbConfig.Schema))
+	tables, err := fetchTables(connection, schemaName)
 	if err != nil {
-		log.Fatalln(err)
+		log.Fatalf("Failed to fetch tables: %v", err)
 	}
 
-	defer tables.Close()
-
-	dirErr := os.MkdirAll("reports", 0o755)
-	if dirErr != nil {
-		fmt.Println(dirErr)
-		return
+	if err := os.MkdirAll("reports", 0o755); err != nil {
+		log.Fatalf("Failed to create reports directory: %v", err)
 	}
 
-	for tables.Next() {
-		var tableName string
-		if err := tables.Scan(&tableName); err != nil {
-			log.Fatalln(err)
-		}
-
-		columns, err := connection.Query(fmt.Sprintf(ColumnListOrderQuery, dbConfig.Schema, tableName))
+	for _, table := range tables {
+		columnList, err := fetchColumns(connection, schemaName, table)
 		if err != nil {
-			log.Fatalln(err)
-		}
-		defer columns.Close()
-
-		var columnList []common.ColumnInfo
-		for columns.Next() {
-			var colInfo common.ColumnInfo
-			if err := columns.Scan(&colInfo.OrdinalPosition, &colInfo.ColumnName, &colInfo.DataType, &colInfo.IsNullable); err != nil {
-				log.Fatalln(err)
-			}
-			colInfo.EntryCount = calculateTotalEntries(colInfo.ColumnName, tableName, connection)
-			columnList = append(columnList, colInfo)
+			log.Fatalf("Failed to fetch columns for table %s: %v", table, err)
 		}
 
-		if err := columns.Err(); err != nil {
-			log.Fatalln(err)
+		for i := range columnList {
+			columnList[i].EntryCount = calculateTotalEntries(connection, table, columnList[i].ColumnName)
 		}
 
 		sort.SliceStable(columnList, func(i, j int) bool {
 			return columnList[i].OrdinalPosition < columnList[j].OrdinalPosition
 		})
-		if err := report.GenerateReport(columnList, tableName); err != nil {
-			log.Fatalf("Failed to generate report: %v", err)
+		if err := report.GenerateReport(columnList, table); err != nil {
+			log.Fatalf("Failed to generate report for table %s: %v", table, err)
 		}
 	}
 }
 
-func calculateTotalEntries(columnName string, tableName string, connection *sql.DB) int {
-	var count int
-	err := connection.QueryRow(fmt.Sprintf(ColumnCountQuery, columnName, tableName)).Scan(&count)
+func fetchTables(connection *sql.DB, schemaName string) ([]string, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	rows, err := connection.QueryContext(ctx, fmt.Sprintf(AllTablesInSchemaQuery, schemaName))
 	if err != nil {
-		log.Fatalln(err)
+		return nil, err
+	}
+	defer rows.Close()
+
+	var tables []string
+	for rows.Next() {
+		var tableName string
+		if err := rows.Scan(&tableName); err != nil {
+			return nil, err
+		}
+		tables = append(tables, tableName)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return tables, nil
+}
+
+func fetchColumns(connection *sql.DB, schemaName string, tableName string) ([]common.ColumnInfo, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	rows, err := connection.QueryContext(ctx, fmt.Sprintf(ColumnListOrderQuery, schemaName, tableName))
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var columns []common.ColumnInfo
+	for rows.Next() {
+		var colInfo common.ColumnInfo
+		if err := rows.Scan(&colInfo.OrdinalPosition, &colInfo.ColumnName, &colInfo.DataType, &colInfo.IsNullable); err != nil {
+			return nil, err
+		}
+		columns = append(columns, colInfo)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return columns, nil
+}
+
+func calculateTotalEntries(connection *sql.DB, tableName string, columnName string) int {
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	query := fmt.Sprintf(ColumnCountQuery, columnName, tableName)
+	var count int
+	err := connection.QueryRowContext(ctx, query).Scan(&count)
+	if err != nil {
+		log.Fatalf("Failed to calculate total entries for column %s in table %s: %v", columnName, tableName, err)
 	}
 	return count
-
 }
