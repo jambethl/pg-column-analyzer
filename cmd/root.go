@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"log"
 	"main/pkg/common"
-	_ "main/pkg/common"
 	"os"
 	"sort"
 
