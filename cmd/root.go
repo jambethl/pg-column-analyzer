@@ -14,33 +14,21 @@ import (
 	"github.com/spf13/cobra"
 )
 
-const ColumnListOrderQuery string = `
-SELECT
-    ordinal_position,
-    column_name,
-    data_type,
-    is_nullable
-FROM
-    information_schema.columns
-WHERE
-    table_schema = 'public'
-    AND table_name = '%s'
-ORDER BY
-    ordinal_position;
-`
+const (
+	ColumnListOrderQuery = `
+		SELECT ordinal_position, column_name, data_type, is_nullable
+		FROM information_schema.columns
+		WHERE table_schema = 'public' AND table_name = '%s'
+		ORDER BY ordinal_position;`
 
-const ColumnCountQuery string = `
-SELECT COUNT('%s') FROM %s;
-`
+	ColumnCountQuery = `SELECT COUNT('%s') FROM %s;`
 
-const AllTablesInSchemaQuery string = `
-SELECT
-    table_name
-FROM
-    information_schema.tables
-WHERE
-    table_schema = 'public';
+	AllTablesInSchemaQuery = `
+		SELECT table_name
+		FROM information_schema.tables
+		WHERE table_schema = 'public';
 `
+)
 
 var (
 	dbName     string
