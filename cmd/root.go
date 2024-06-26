@@ -5,10 +5,11 @@ import (
 	"database/sql"
 	"fmt"
 	"log"
-	"main/pkg/common"
 	"os"
 	"sort"
 	"time"
+
+	"main/pkg/common"
 
 	"main/pkg/db"
 	"main/pkg/report"
@@ -37,6 +38,7 @@ var (
 	password   string
 	host       string
 	schemaName string
+	port       string
 )
 
 var rootCmd = &cobra.Command{
@@ -60,6 +62,7 @@ func init() {
 	rootCmd.PersistentFlags().StringVarP(&password, "password", "p", "123", "Password")
 	rootCmd.PersistentFlags().StringVarP(&host, "host", "l", "localhost", "Host")
 	rootCmd.PersistentFlags().StringVarP(&schemaName, "schema", "s", "public", "Schema name")
+	rootCmd.PersistentFlags().StringVarP(&port, "port", "t", "5432", "Port")
 }
 
 func configureDatabase() {
@@ -69,6 +72,7 @@ func configureDatabase() {
 		Password: password,
 		Host:     host,
 		Schema:   schemaName,
+		Port:     port,
 	}
 
 	connection, err := db.Connect(dbConfig)
