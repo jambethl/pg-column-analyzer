@@ -58,6 +58,10 @@ There are five supported optional arguments:
   * name: `schema`
   * shorthand: `s`
   * default: `public`
+* Port
+  * name: `port`
+  * shorthand: `t`
+  * default: `5432`
 
 ```sh
 go run main.go
@@ -67,5 +71,5 @@ The above will run the program with the following default values of the above fi
 To run the program with custom arguments:
 
 ```sh
-go run main.go -d postgres -u postgres -p 123 -l localhost -s public
+go run main.go -d postgres -u postgres -p 123 -l localhost -s public -t 5432
 ```
