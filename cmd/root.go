@@ -116,7 +116,7 @@ func fetchTables(connection *sql.DB, schemaName string) ([]string, error) {
 
 	rows, err := connection.QueryContext(ctx, fmt.Sprintf(AllTablesInSchemaQuery, schemaName))
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to fetch tables: %w", err)
 	}
 	defer rows.Close()
 
@@ -124,13 +124,13 @@ func fetchTables(connection *sql.DB, schemaName string) ([]string, error) {
 	for rows.Next() {
 		var tableName string
 		if err := rows.Scan(&tableName); err != nil {
-			return nil, err
+			return nil, fmt.Errorf("failed to scan table name: %w", err)
 		}
 		tables = append(tables, tableName)
 	}
 
 	if err := rows.Err(); err != nil {
-		return nil, err
+		return nil, fmt.Errorf("rows error: %w", err)
 	}
 
 	return tables, nil
@@ -142,7 +142,7 @@ func fetchColumns(connection *sql.DB, schemaName string, tableName string) ([]co
 
 	rows, err := connection.QueryContext(ctx, fmt.Sprintf(ColumnListOrderQuery, schemaName, tableName))
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to fetch columns for table %s: %w", tableName, err)
 	}
 	defer rows.Close()
 
@@ -150,13 +150,13 @@ func fetchColumns(connection *sql.DB, schemaName string, tableName string) ([]co
 	for rows.Next() {
 		var colInfo common.ColumnInfo
 		if err := rows.Scan(&colInfo.OrdinalPosition, &colInfo.ColumnName, &colInfo.DataType, &colInfo.IsNullable); err != nil {
-			return nil, err
+			return nil, fmt.Errorf("failed to scan column info: %w", err)
 		}
 		columns = append(columns, colInfo)
 	}
 
 	if err := rows.Err(); err != nil {
-		return nil, err
+		return nil, fmt.Errorf("rows error: %w", err)
 	}
 	return columns, nil
 }
