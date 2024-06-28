@@ -4,10 +4,11 @@ import (
 	"encoding/csv"
 	"fmt"
 	"log"
-	"main/pkg/common"
 	"os"
 	"sort"
 	"strconv"
+
+	"main/pkg/common"
 )
 
 var dataTypeMap = map[string]int{
