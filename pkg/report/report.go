@@ -3,7 +3,6 @@ package report
 import (
 	"encoding/csv"
 	"fmt"
-	"log"
 	"os"
 	"sort"
 	"strconv"
@@ -55,7 +54,7 @@ func GenerateReport(columnList []common.ColumnInfo, tableName string) error {
 		wastedPadding := calculateWastedPadding(currentSize, nextSize)
 		recommendedPosition := findRecommendedPosition(col.ColumnName, sortedColumnList)
 
-		writer.Write([]string{
+		row := []string{
 			strconv.Itoa(col.OrdinalPosition),
 			col.ColumnName,
 			col.DataType,
@@ -64,15 +63,13 @@ func GenerateReport(columnList []common.ColumnInfo, tableName string) error {
 			strconv.Itoa(wastedPadding),
 			strconv.Itoa(recommendedPosition),
 			strconv.Itoa(col.EntryCount * wastedPadding),
-		})
+		}
+		if err := writer.Write(row); err != nil {
+			return fmt.Errorf("unable to write CSV row: %v", err)
+		}
 	}
 
-	dir, err := os.Getwd()
-	if err != nil {
-		log.Fatalf("Unable to get current directory: %v", err)
-	}
-	fmt.Printf("Report %s/%s generated successfully.\n", dir, reportName)
-
+	fmt.Printf("Report %s generated successfully.\n", reportName)
 	return nil
 }
 
