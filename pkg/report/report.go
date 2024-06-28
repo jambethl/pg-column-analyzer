@@ -31,7 +31,7 @@ func GenerateReport(columnList []common.ColumnInfo, tableName string) error {
 	reportName := fmt.Sprintf("reports/%s_report.csv", tableName)
 	file, err := os.Create(reportName)
 	if err != nil {
-		log.Fatalf("Unable to create report: %s", reportName)
+		return fmt.Errorf("unable to create report: %s, errorL %v", reportName, err)
 	}
 	defer file.Close()
 
