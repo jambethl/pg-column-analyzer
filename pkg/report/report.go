@@ -38,16 +38,11 @@ func GenerateReport(columnList []common.ColumnInfo, tableName string) error {
 	writer := csv.NewWriter(file)
 	defer writer.Flush()
 
-	writer.Write([]string{"Ordinal Position", "Column Name", "Data Type", "Nullable", "Data Type Size (B)", "Wasted Padding Per Entry", "Recommended Position", "Total Wasted Space"})
+	if err := writeCSVHeader(writer); err != nil {
+		return fmt.Errorf("unable to write CSV header: %v", err)
+	}
 
-	// Sort columns to recommend optimal order
-	sortedColumnList := make([]common.ColumnInfo, len(columnList))
-	copy(sortedColumnList, columnList)
-	sort.SliceStable(sortedColumnList, func(i, j int) bool {
-		sizeI := dataTypeMap[sortedColumnList[i].DataType]
-		sizeJ := dataTypeMap[sortedColumnList[j].DataType]
-		return sizeI > sizeJ // Larger sizes come first
-	})
+	sortedColumnList := sortColumnsBySize(columnList)
 
 	// Write current column order with padding information
 	for i, col := range columnList {
@@ -80,6 +75,20 @@ func GenerateReport(columnList []common.ColumnInfo, tableName string) error {
 	fmt.Printf("Report %s/%s generated successfully.\n", dir, reportName)
 
 	return nil
+}
+
+func writeCSVHeader(writer *csv.Writer) error {
+	header := []string{"Ordinal Position", "Column Name", "Data Type", "Nullable", "Data Type Size (B)", "Wasted Padding Per Entry", "Recommended Position", "Total Wasted Space"}
+	return writer.Write(header)
+}
+
+func sortColumnsBySize(columnList []common.ColumnInfo) []common.ColumnInfo {
+	sortedColumnList := make([]common.ColumnInfo, len(columnList))
+	copy(sortedColumnList, columnList)
+	sort.SliceStable(sortedColumnList, func(i, j int) bool {
+		return dataTypeMap[sortedColumnList[i].DataType] > dataTypeMap[sortedColumnList[j].DataType]
+	})
+	return sortedColumnList
 }
 
 func calculateWastedPadding(currentSize, nextSize int) int {
