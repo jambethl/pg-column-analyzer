@@ -50,9 +50,8 @@ func GenerateReport(columnList []common.ColumnInfo, tableName string) error {
 		var nextSize int
 		if i < len(columnList)-1 {
 			nextSize = dataTypeMap[columnList[i+1].DataType]
-		} else {
-			nextSize = 0
 		}
+
 		wastedPadding := calculateWastedPadding(currentSize, nextSize)
 		recommendedPosition := findRecommendedPosition(col.ColumnName, sortedColumnList)
 
