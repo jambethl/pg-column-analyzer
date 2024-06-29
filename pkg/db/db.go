@@ -16,10 +16,12 @@ type Config struct {
 	Port     string
 }
 
+var sqlOpen = sql.Open
+
 func Connect(config Config) (*sql.DB, error) {
 	connStr := fmt.Sprintf("host=%s port=%s dbname=%s user=%s password=%s sslmode=disable", config.Host, config.Port, config.DBName, config.UserName, config.Password)
 
-	db, err := sql.Open("postgres", connStr)
+	db, err := sqlOpen("postgres", connStr)
 	if err != nil {
 		return nil, fmt.Errorf("failed to open database connection: %w", err)
 	}
