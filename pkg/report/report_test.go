@@ -3,10 +3,11 @@ package report
 import (
 	"encoding/csv"
 	"fmt"
-	"main/pkg/common"
 	"os"
 	"path/filepath"
 	"testing"
+
+	"main/pkg/common"
 )
 
 var expectedHeader = []string{"Ordinal Position", "Column Name", "Data Type", "Nullable", "Data Type Size (B)", "Wasted Padding Per Entry", "Recommended Position", "Total Wasted Space"}
@@ -147,7 +148,7 @@ func assertResult(t *testing.T, rows [][]string, expectedRows [][]string) {
 func createReportsDirectory(t *testing.T, tmpDir string) string {
 	// Create a temporary directory for the report
 	reportDir := filepath.Join(tmpDir, "reports")
-	if err := os.Mkdir(reportDir, 0755); err != nil {
+	if err := os.Mkdir(reportDir, 0o755); err != nil {
 		t.Fatalf("Failed to create reports directory: %v", err)
 	}
 	return reportDir
