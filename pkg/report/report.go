@@ -17,6 +17,7 @@ var dataTypeMap = map[string]int{
 	"date":                        4,
 	"integer":                     4,
 	"real":                        4,
+	"serial":                      4,
 	"bigint":                      8,
 	"bigserial":                   8,
 	"double precision":            8,
