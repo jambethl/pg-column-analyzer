@@ -12,6 +12,7 @@ import (
 
 var dataTypeMap = map[string]int{
 	"boolean":                     1,
+	"char":                        1,
 	"smallint":                    2,
 	"smallserial":                 2,
 	"date":                        4,
