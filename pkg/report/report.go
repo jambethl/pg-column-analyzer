@@ -21,12 +21,12 @@ var dataTypeMap = map[string]int{
 	"bigint":                      8,
 	"bigserial":                   8,
 	"double precision":            8,
+	"uuid":                        8,
 	"timestamp without time zone": 8,
 	"timestamp with time zone":    8,
 	"bytea":                       10, // Variable size, often larger
 	"text":                        10, // Variable size, often larger
 	"varchar":                     10, // Variable size, often larger
-	"uuid":                        16,
 }
 
 func GenerateReport(columnList []common.ColumnInfo, tableName string) error {

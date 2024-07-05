@@ -89,10 +89,10 @@ func TestGenerateReport_AllDataTypes(t *testing.T) {
 	generateReportTest(t, columnList, [][]string{
 		{"1", "id", "smallint", "NO", "2", "0", "5", "0"},
 		{"2", "status", "boolean", "NO", "1", "7", "6", "70"},
-		{"3", "created_at", "timestamp without time zone", "NO", "8", "0", "3", "0"},
-		{"4", "score", "double precision", "YES", "8", "8", "4", "48"},
-		{"5", "unique_id", "uuid", "NO", "16", "4", "1", "40"},
-		{"6", "data", "bytea", "YES", "10", "0", "2", "0"},
+		{"3", "created_at", "timestamp without time zone", "NO", "8", "0", "2", "0"},
+		{"4", "score", "double precision", "YES", "8", "0", "3", "0"},
+		{"5", "unique_id", "uuid", "NO", "8", "2", "4", "20"},
+		{"6", "data", "bytea", "YES", "10", "0", "1", "0"},
 	})
 }
 
@@ -102,7 +102,19 @@ func TestGenerateReport_SingleColumn(t *testing.T) {
 	}
 
 	generateReportTest(t, columnList, [][]string{
-		{"1", "id", "uuid", "NO", "16", "0", "1", "0"},
+		{"1", "id", "uuid", "NO", "8", "0", "1", "0"},
+	})
+}
+
+func TestGenerateReport_Uuid(t *testing.T) {
+	columnList := []common.ColumnInfo{
+		{OrdinalPosition: 1, ColumnName: "id", DataType: "bigint", IsNullable: "NO", EntryCount: 400},
+		{OrdinalPosition: 2, ColumnName: "uuid", DataType: "uuid", IsNullable: "NO", EntryCount: 400},
+	}
+
+	generateReportTest(t, columnList, [][]string{
+		{"1", "id", "bigint", "NO", "8", "0", "1", "0"},
+		{"2", "uuid", "uuid", "NO", "8", "0", "2", "0"},
 	})
 }
 
