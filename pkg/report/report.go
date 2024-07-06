@@ -22,6 +22,7 @@ var dataTypeMap = map[string]int{
 	"bigint":                      8,
 	"bigserial":                   8,
 	"double precision":            8,
+	"money":                       8,
 	"uuid":                        8,
 	"timestamp without time zone": 8,
 	"timestamp with time zone":    8,
