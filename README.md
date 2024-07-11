@@ -30,8 +30,8 @@ this alignment padding adds up.
 |------------------|---------------|-----------------------------|----------|--------------------|--------------------------|----------------------|--------------------|
 | 1                | id            | bigint                      | NO       | 8                  | 0                        | 2                    | 0                  |
 | 2                | post_uid      | uuid                        | NO       | 8                  | 0                        | 3                    | 0                  |
-| 3                | author_uid    | uuid                        | NO       | 8                  | 2                        | 4                    | 6944               |
-| 4                | content       | text                        | NO       | 10                 | 6                        | 1                    | 10416              |
+| 3                | author_uid    | uuid                        | NO       | 8                  | 2                        | 4                    | 2776               |
+| 4                | content       | text                        | NO       | 10                 | 6                        | 1                    | 8328               |
 | 5                | created_at    | timestamp without timezone  | NO       | 8                  | 0                        | 5                    | 0                  |
 | 6                | like_count    | integer                     | NO       | 4                  | 0                        | 6                    | 0                  |
 | 7                | comment_count | integer                     | NO       | 4                  | 0                        | 7                    | 0                  |
