@@ -27,9 +27,12 @@ var dataTypeMap = map[string]int{
 	"timestamp":                   8,
 	"timestamp without time zone": 8,
 	"timestamp with time zone":    8,
-	"bytea":                       10, // Variable size, often larger
-	"text":                        10, // Variable size, often larger
-	"varchar":                     10, // Variable size, often larger
+}
+
+var variableLengthDataTypes = map[string]struct{}{
+	"bytea":   {},
+	"text":    {},
+	"varchar": {},
 }
 
 func GenerateReport(columnList []common.ColumnInfo, tableName string) error {
@@ -85,11 +88,20 @@ func writeCSVHeader(writer *csv.Writer) error {
 }
 
 func sortColumnsBySize(columnList []common.ColumnInfo) []common.ColumnInfo {
-	sortedColumnList := make([]common.ColumnInfo, len(columnList))
-	copy(sortedColumnList, columnList)
-	sort.SliceStable(sortedColumnList, func(i, j int) bool {
-		return dataTypeMap[sortedColumnList[i].DataType] > dataTypeMap[sortedColumnList[j].DataType]
+	var fixedLengthColumns, variableLengthColumns []common.ColumnInfo
+	for _, col := range columnList {
+		_, exists := variableLengthDataTypes[col.DataType]
+		if exists {
+			variableLengthColumns = append(variableLengthColumns, col)
+		} else {
+			fixedLengthColumns = append(fixedLengthColumns, col)
+		}
+	}
+	sort.SliceStable(fixedLengthColumns, func(i, j int) bool {
+		return dataTypeMap[fixedLengthColumns[i].DataType] > dataTypeMap[fixedLengthColumns[j].DataType]
 	})
+
+	sortedColumnList := append(fixedLengthColumns, variableLengthColumns...)
 	return sortedColumnList
 }
 
