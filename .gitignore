@@ -1,3 +1,6 @@
 .DS_Store
 .idea
 reports
+
+# ignore `go test -c`
+*.test
