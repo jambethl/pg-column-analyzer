@@ -29,5 +29,5 @@ jobs:
 
     - uses: dominikh/staticcheck-action@v1.2.0
       with:
-        versoin: '2024.1'
+        version: '2024.1'
         min-go-version: '1.22.1'
