@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"sort"
 	"time"
 
 	"main/pkg/common"
@@ -101,9 +100,6 @@ func configureDatabase() {
 			columnList[i].EntryCount = calculateTotalEntries(connection, table, columnList[i].ColumnName)
 		}
 
-		sort.SliceStable(columnList, func(i, j int) bool {
-			return columnList[i].OrdinalPosition < columnList[j].OrdinalPosition
-		})
 		if err := report.GenerateReport(columnList, table); err != nil {
 			log.Fatalf("Failed to generate report for table %s: %v", table, err)
 		}
