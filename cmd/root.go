@@ -91,18 +91,22 @@ func configureDatabase() {
 	}
 
 	for _, table := range tables {
-		columnList, err := fetchColumns(connection, schemaName, table)
-		if err != nil {
-			log.Fatalf("Failed to fetch columns for table %s: %v", table, err)
-		}
+		generateReportForTable(connection, schemaName, table)
+	}
+}
 
-		for i := range columnList {
-			columnList[i].EntryCount = calculateTotalEntries(connection, table, columnList[i].ColumnName)
-		}
+func generateReportForTable(connection *sql.DB, schemaName string, table string) {
+	columnList, err := fetchColumns(connection, schemaName, table)
+	if err != nil {
+		log.Fatalf("Failed to fetch columns for table %s: %v", table, err)
+	}
 
-		if err := report.GenerateReport(columnList, table); err != nil {
-			log.Fatalf("Failed to generate report for table %s: %v", table, err)
-		}
+	for i := range columnList {
+		columnList[i].EntryCount = calculateTotalEntries(connection, table, columnList[i].ColumnName)
+	}
+
+	if err := report.GenerateReport(columnList, table); err != nil {
+		log.Fatalf("Failed to generate report for table %s: %v", table, err)
 	}
 }
 
