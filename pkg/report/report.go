@@ -109,7 +109,13 @@ func calculateWastedPadding(currentSize, nextSize int) int {
 	if nextSize == 0 {
 		return 0
 	}
-	return (nextSize - (currentSize % nextSize)) % nextSize
+
+	remainder := currentSize % nextSize
+	if remainder == 0 {
+		return 0
+	}
+
+	return nextSize - remainder
 }
 
 func findRecommendedPosition(columnName string, sortedColumnList []common.ColumnInfo) int {
