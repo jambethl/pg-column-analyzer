@@ -10,6 +10,7 @@ import (
 	"main/pkg/common"
 )
 
+// This stores a map of fixed-length Postgres data types and their column padding
 var dataTypeMap = map[string]int{
 	"boolean":                     1,
 	"char":                        1,
@@ -29,6 +30,7 @@ var dataTypeMap = map[string]int{
 	"timestamp with time zone":    8,
 }
 
+// This stores variable-length Postgres data types, where we ignore column padding
 var variableLengthDataTypes = map[string]struct{}{
 	"bytea":   {},
 	"text":    {},
