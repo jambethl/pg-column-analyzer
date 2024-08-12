@@ -161,10 +161,10 @@ func fetchColumns(connection *sql.DB, schemaName string, tableName string) ([]co
 }
 
 func calculateTotalEntries(connection *sql.DB, tableName string, columnName string) int {
+	query := fmt.Sprintf(ColumnCountQuery, columnName, tableName)
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	query := fmt.Sprintf(ColumnCountQuery, columnName, tableName)
 	var count int
 	err := connection.QueryRowContext(ctx, query).Scan(&count)
 	if err != nil {
