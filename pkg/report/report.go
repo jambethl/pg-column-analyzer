@@ -86,8 +86,16 @@ func GenerateReport(columnList []common.ColumnInfo, tableName string) error {
 }
 
 func writeCSVHeader(writer *csv.Writer) error {
-	header := []string{"Ordinal Position", "Column Name", "Data Type", "Nullable", "Data Type Size (B)", "Wasted Padding Per Entry", "Recommended Position", "Total Wasted Space"}
-	return writer.Write(header)
+	return writer.Write([]string{
+		"Ordinal Position",
+		"Column Name",
+		"Data Type",
+		"Nullable",
+		"Data Type Size (B)",
+		"Wasted Padding Per Entry",
+		"Recommended Position",
+		"Total Wasted Space",
+	})
 }
 
 func sortColumnsBySize(columnList []common.ColumnInfo) []common.ColumnInfo {
