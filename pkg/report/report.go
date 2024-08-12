@@ -23,6 +23,7 @@ var dataTypeMap = map[string]int{
 	"bigint":                      8,
 	"bigserial":                   8,
 	"double precision":            8,
+	"interval":                    8,
 	"money":                       8,
 	"uuid":                        8,
 	"timestamp":                   8,
