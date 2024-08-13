@@ -12,6 +12,7 @@ import (
 
 // This stores a map of fixed-length Postgres data types and their column padding
 var dataTypeMap = map[string]int{
+	// TODO - bit(n); determine bit length by value of n
 	"boolean":                     1,
 	"char":                        1,
 	"smallint":                    2,
