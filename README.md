@@ -73,3 +73,17 @@ To run the program with custom arguments:
 ```sh
 go run main.go -d postgres -u postgres -p 123 -l localhost -s public -t 5432
 ```
+
+## Project Structure
+
+### cmd
+The `cmd` package contains the code for initialising the CLI with the supported arguments, and retrieving the necessary data from the configured database.
+
+### pkg
+The `pkg` contains a few sub-packages as defined below:
+
+* `common` -- contains definitions of structs that are to be shared between files.
+
+* `db` -- responsible for opening the SQL database connection, and can be viewed as an abstraction of the database configuration.
+
+* `report` -- holds the logic for generating the CSV report which informs you of the recommended column order based on data type padding. This is where the supported data typed are defined along with their alignments.
