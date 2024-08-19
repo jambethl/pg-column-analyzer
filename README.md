@@ -2,6 +2,13 @@
 
 PostgreSQL Column Analyzer is a CLI tool written in Go which iterates through your PostgreSQL tables and produces a CSV file detailing the column order of each table, reporting how much space is wasted due to inefficient column definition order, helping you optimize your database schemas for ideal performance.
 
+## Index
+
+- [Overview](#overview)
+- [Features](#features)
+- [Running](#running)
+- [Project Structure](#structure)
+
 ## Overview
 PostgreSQL optimises how data is stored on disk by padding columns so that they align with their neighbouring columns.
 For example, a `boolean` column has a size of 1-byte. If we then defined a `smallint` column (2-bytes), an extra byte
@@ -74,7 +81,7 @@ To run the program with custom arguments:
 go run main.go -d postgres -u postgres -p 123 -l localhost -s public -t 5432
 ```
 
-## Project Structure
+## Structure
 
 ### cmd
 The `cmd` package contains the code for initialising the CLI with the supported arguments, and retrieving the necessary data from the configured database.
