@@ -18,26 +18,26 @@ import (
 
 const (
 	ColumnListOrderQuery = `
-SELECT 
-    c.ordinal_position,
-    c.column_name,
-    c.data_type,
-    c.is_nullable,
-    t.typlen
-FROM 
-    information_schema.columns c
-JOIN 
-    pg_class pc ON pc.relname = c.table_name
-JOIN 
-    pg_attribute a ON a.attrelid = pc.oid AND a.attname = c.column_name
-JOIN 
-    pg_type t ON t.oid = a.atttypid
-WHERE 
-    c.table_schema = '%s' 
-    AND c.table_name = '%s'
-ORDER BY 
-    c.ordinal_position;
-    `
+        SELECT 
+            c.ordinal_position,
+            c.column_name,
+            c.data_type,
+            c.is_nullable,
+            t.typlen
+        FROM 
+            information_schema.columns c
+        JOIN 
+            pg_class pc ON pc.relname = c.table_name
+        JOIN 
+            pg_attribute a ON a.attrelid = pc.oid AND a.attname = c.column_name
+        JOIN 
+            pg_type t ON t.oid = a.atttypid
+        WHERE 
+            c.table_schema = '%s' 
+            AND c.table_name = '%s'
+        ORDER BY 
+            c.ordinal_position;
+        `
 
 	ColumnCountQuery = `SELECT COUNT('%s') FROM %s;`
 
