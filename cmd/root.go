@@ -18,10 +18,26 @@ import (
 
 const (
 	ColumnListOrderQuery = `
-		SELECT ordinal_position, column_name, data_type, is_nullable
-		FROM information_schema.columns
-		WHERE table_schema = '%s' AND table_name = '%s'
-		ORDER BY ordinal_position;`
+SELECT 
+    c.ordinal_position,
+    c.column_name,
+    c.data_type,
+    c.is_nullable,
+    t.typlen
+FROM 
+    information_schema.columns c
+JOIN 
+    pg_class pc ON pc.relname = c.table_name
+JOIN 
+    pg_attribute a ON a.attrelid = pc.oid AND a.attname = c.column_name
+JOIN 
+    pg_type t ON t.oid = a.atttypid
+WHERE 
+    c.table_schema = '%s' 
+    AND c.table_name = '%s'
+ORDER BY 
+    c.ordinal_position;
+    `
 
 	ColumnCountQuery = `SELECT COUNT('%s') FROM %s;`
 
@@ -30,6 +46,13 @@ const (
 		FROM information_schema.tables
 		WHERE table_schema = '%s';`
 )
+
+var alignmentMap = map[rune]int{
+	'c': -1,
+	's': 2,
+	'i': 4,
+	'd': 8,
+}
 
 var (
 	dbName     string
@@ -148,7 +171,7 @@ func fetchColumns(connection *sql.DB, schemaName string, tableName string) ([]co
 	var columns []common.ColumnInfo
 	for rows.Next() {
 		var colInfo common.ColumnInfo
-		if err := rows.Scan(&colInfo.OrdinalPosition, &colInfo.ColumnName, &colInfo.DataType, &colInfo.IsNullable); err != nil {
+		if err := rows.Scan(&colInfo.OrdinalPosition, &colInfo.ColumnName, &colInfo.DataType, &colInfo.IsNullable, &colInfo.TypeAlignment); err != nil {
 			return nil, fmt.Errorf("failed to scan column info: %w", err)
 		}
 		columns = append(columns, colInfo)
