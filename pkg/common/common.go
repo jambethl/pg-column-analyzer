@@ -6,5 +6,5 @@ type ColumnInfo struct {
 	DataType        string
 	IsNullable      string
 	EntryCount      int
-	TypLen          int
+	TypAlign        int
 }

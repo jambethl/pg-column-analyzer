@@ -23,7 +23,7 @@ const (
             c.column_name,
             c.data_type,
             c.is_nullable,
-            t.typlen
+            t.typalign
         FROM 
             information_schema.columns c
         JOIN 
@@ -47,11 +47,11 @@ const (
 		WHERE table_schema = '%s';`
 )
 
-var alignmentMap = map[rune]int{
-	'c': -1,
-	's': 2,
-	'i': 4,
-	'd': 8,
+var alignmentMap = map[string]int{
+	"c": -1,
+	"s": 2,
+	"i": 4,
+	"d": 8,
 }
 
 var (
@@ -171,9 +171,15 @@ func fetchColumns(connection *sql.DB, schemaName string, tableName string) ([]co
 	var columns []common.ColumnInfo
 	for rows.Next() {
 		var colInfo common.ColumnInfo
-		if err := rows.Scan(&colInfo.OrdinalPosition, &colInfo.ColumnName, &colInfo.DataType, &colInfo.IsNullable, &colInfo.TypeAlignment); err != nil {
+		var typAlignRune string
+		if err := rows.Scan(&colInfo.OrdinalPosition, &colInfo.ColumnName, &colInfo.DataType, &colInfo.IsNullable, &typAlignRune); err != nil {
 			return nil, fmt.Errorf("failed to scan column info: %w", err)
 		}
+		alignmentValue, exists := alignmentMap[typAlignRune]
+		if !exists {
+			return nil, fmt.Errorf("failed to determine alignment value: %w", err)
+		}
+		colInfo.TypAlign = alignmentValue
 		columns = append(columns, colInfo)
 	}
 
