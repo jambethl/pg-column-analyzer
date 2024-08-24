@@ -23,6 +23,7 @@ const (
             c.column_name,
             c.data_type,
             c.is_nullable,
+            t.typlen,
             t.typalign
         FROM 
             information_schema.columns c
@@ -172,7 +173,7 @@ func fetchColumns(connection *sql.DB, schemaName string, tableName string) ([]co
 	for rows.Next() {
 		var colInfo common.ColumnInfo
 		var typAlignRune string
-		if err := rows.Scan(&colInfo.OrdinalPosition, &colInfo.ColumnName, &colInfo.DataType, &colInfo.IsNullable, &typAlignRune); err != nil {
+		if err := rows.Scan(&colInfo.OrdinalPosition, &colInfo.ColumnName, &colInfo.DataType, &colInfo.IsNullable, &colInfo.TypLen, &typAlignRune); err != nil {
 			return nil, fmt.Errorf("failed to scan column info: %w", err)
 		}
 		alignmentValue, exists := alignmentMap[typAlignRune]

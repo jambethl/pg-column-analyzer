@@ -14,14 +14,14 @@ var expectedHeader = []string{"Ordinal Position", "Column Name", "Data Type", "N
 
 func TestGenerateReport(t *testing.T) {
 	columnList := []common.ColumnInfo{
-		{OrdinalPosition: 1, ColumnName: "enabled", DataType: "boolean", IsNullable: "NO", EntryCount: 10},
-		{OrdinalPosition: 2, ColumnName: "age", DataType: "smallint", IsNullable: "NO", EntryCount: 10},
-		{OrdinalPosition: 3, ColumnName: "count", DataType: "integer", IsNullable: "NO", EntryCount: 10},
-		{OrdinalPosition: 4, ColumnName: "id", DataType: "bigint", IsNullable: "NO", EntryCount: 10},
+		{OrdinalPosition: 1, ColumnName: "enabled", DataType: "boolean", IsNullable: "NO", TypLen: 1, TypAlign: -1, EntryCount: 10},
+		{OrdinalPosition: 2, ColumnName: "age", DataType: "smallint", IsNullable: "NO", TypLen: 2, TypAlign: 2, EntryCount: 10},
+		{OrdinalPosition: 3, ColumnName: "count", DataType: "integer", IsNullable: "NO", TypLen: 4, TypAlign: 4, EntryCount: 10},
+		{OrdinalPosition: 4, ColumnName: "id", DataType: "bigint", IsNullable: "NO", TypLen: 8, TypAlign: 8, EntryCount: 10},
 	}
 
 	generateReportTest(t, columnList, [][]string{
-		{"1", "enabled", "boolean", "NO", "1", "1", "4", "10"},
+		{"1", "enabled", "boolean", "NO", "1", "3", "4", "30"},
 		{"2", "age", "smallint", "NO", "2", "2", "3", "20"},
 		{"3", "count", "integer", "NO", "4", "4", "2", "40"},
 		{"4", "id", "bigint", "NO", "8", "0", "1", "0"},
@@ -30,8 +30,8 @@ func TestGenerateReport(t *testing.T) {
 
 func TestGenerateReport_NullableColumns(t *testing.T) {
 	columnList := []common.ColumnInfo{
-		{OrdinalPosition: 1, ColumnName: "description", DataType: "text", IsNullable: "YES", EntryCount: 3},
-		{OrdinalPosition: 2, ColumnName: "price", DataType: "real", IsNullable: "YES", EntryCount: 4},
+		{OrdinalPosition: 1, ColumnName: "description", DataType: "text", IsNullable: "YES", TypLen: 1, TypAlign: -1, EntryCount: 3},
+		{OrdinalPosition: 2, ColumnName: "price", DataType: "real", IsNullable: "YES", TypLen: 4, TypAlign: 4, EntryCount: 4},
 	}
 
 	generateReportTest(t, columnList, [][]string{
@@ -42,8 +42,8 @@ func TestGenerateReport_NullableColumns(t *testing.T) {
 
 func TestGenerateReport_SameDataType(t *testing.T) {
 	columnList := []common.ColumnInfo{
-		{OrdinalPosition: 1, ColumnName: "first_name", DataType: "varchar", IsNullable: "YES", EntryCount: 3},
-		{OrdinalPosition: 2, ColumnName: "last_name", DataType: "varchar", IsNullable: "YES", EntryCount: 2},
+		{OrdinalPosition: 1, ColumnName: "first_name", DataType: "varchar", IsNullable: "YES", TypLen: 1, TypAlign: -1, EntryCount: 3},
+		{OrdinalPosition: 2, ColumnName: "last_name", DataType: "varchar", IsNullable: "YES", TypLen: 1, TypAlign: -1, EntryCount: 2},
 	}
 
 	generateReportTest(t, columnList, [][]string{
@@ -54,14 +54,14 @@ func TestGenerateReport_SameDataType(t *testing.T) {
 
 func TestGenerateReport_SOExample(t *testing.T) {
 	columnList := []common.ColumnInfo{
-		{OrdinalPosition: 1, ColumnName: "e", DataType: "smallint", IsNullable: "NO", EntryCount: 10},
-		{OrdinalPosition: 2, ColumnName: "a", DataType: "bigint", IsNullable: "NO", EntryCount: 10},
-		{OrdinalPosition: 3, ColumnName: "f", DataType: "smallint", IsNullable: "NO", EntryCount: 10},
-		{OrdinalPosition: 4, ColumnName: "b", DataType: "bigint", IsNullable: "NO", EntryCount: 10},
-		{OrdinalPosition: 5, ColumnName: "g", DataType: "smallint", IsNullable: "NO", EntryCount: 10},
-		{OrdinalPosition: 6, ColumnName: "c", DataType: "bigint", IsNullable: "NO", EntryCount: 10},
-		{OrdinalPosition: 7, ColumnName: "h", DataType: "smallint", IsNullable: "NO", EntryCount: 10},
-		{OrdinalPosition: 8, ColumnName: "d", DataType: "bigint", IsNullable: "NO", EntryCount: 10},
+		{OrdinalPosition: 1, ColumnName: "e", DataType: "smallint", IsNullable: "NO", TypLen: 2, TypAlign: 2, EntryCount: 10},
+		{OrdinalPosition: 2, ColumnName: "a", DataType: "bigint", IsNullable: "NO", TypLen: 8, TypAlign: 8, EntryCount: 10},
+		{OrdinalPosition: 3, ColumnName: "f", DataType: "smallint", IsNullable: "NO", TypLen: 2, TypAlign: 2, EntryCount: 10},
+		{OrdinalPosition: 4, ColumnName: "b", DataType: "bigint", IsNullable: "NO", TypLen: 8, TypAlign: 8, EntryCount: 10},
+		{OrdinalPosition: 5, ColumnName: "g", DataType: "smallint", IsNullable: "NO", TypLen: 2, TypAlign: 2, EntryCount: 10},
+		{OrdinalPosition: 6, ColumnName: "c", DataType: "bigint", IsNullable: "NO", TypLen: 8, TypAlign: 8, EntryCount: 10},
+		{OrdinalPosition: 7, ColumnName: "h", DataType: "smallint", IsNullable: "NO", TypLen: 2, TypAlign: 2, EntryCount: 10},
+		{OrdinalPosition: 8, ColumnName: "d", DataType: "bigint", IsNullable: "NO", TypLen: 8, TypAlign: 8, EntryCount: 10},
 	}
 
 	generateReportTest(t, columnList, [][]string{
@@ -78,12 +78,12 @@ func TestGenerateReport_SOExample(t *testing.T) {
 
 func TestGenerateReport_AllDataTypes(t *testing.T) {
 	columnList := []common.ColumnInfo{
-		{OrdinalPosition: 1, ColumnName: "id", DataType: "smallint", IsNullable: "NO", EntryCount: 10},
-		{OrdinalPosition: 2, ColumnName: "status", DataType: "boolean", IsNullable: "NO", EntryCount: 10},
-		{OrdinalPosition: 3, ColumnName: "created_at", DataType: "timestamp without time zone", IsNullable: "NO", EntryCount: 10},
-		{OrdinalPosition: 4, ColumnName: "score", DataType: "double precision", IsNullable: "YES", EntryCount: 6},
-		{OrdinalPosition: 5, ColumnName: "unique_id", DataType: "uuid", IsNullable: "NO", EntryCount: 10},
-		{OrdinalPosition: 6, ColumnName: "data", DataType: "bytea", IsNullable: "YES", EntryCount: 5},
+		{OrdinalPosition: 1, ColumnName: "id", DataType: "smallint", IsNullable: "NO", TypLen: 2, TypAlign: 2, EntryCount: 10},
+		{OrdinalPosition: 2, ColumnName: "status", DataType: "boolean", IsNullable: "NO", TypLen: 1, TypAlign: -1, EntryCount: 10},
+		{OrdinalPosition: 3, ColumnName: "created_at", DataType: "timestamp without time zone", IsNullable: "NO", TypLen: 8, TypAlign: 8, EntryCount: 10},
+		{OrdinalPosition: 4, ColumnName: "score", DataType: "double precision", IsNullable: "YES", TypLen: 8, TypAlign: 8, EntryCount: 6},
+		{OrdinalPosition: 5, ColumnName: "unique_id", DataType: "uuid", IsNullable: "NO", TypLen: 16, TypAlign: -1, EntryCount: 10},
+		{OrdinalPosition: 6, ColumnName: "data", DataType: "bytea", IsNullable: "YES", TypLen: 1, TypAlign: -1, EntryCount: 5},
 	}
 
 	generateReportTest(t, columnList, [][]string{
@@ -98,7 +98,7 @@ func TestGenerateReport_AllDataTypes(t *testing.T) {
 
 func TestGenerateReport_SingleColumn(t *testing.T) {
 	columnList := []common.ColumnInfo{
-		{OrdinalPosition: 1, ColumnName: "id", DataType: "uuid", IsNullable: "NO"},
+		{OrdinalPosition: 1, ColumnName: "id", DataType: "uuid", IsNullable: "NO", TypLen: 16, TypAlign: -1},
 	}
 
 	generateReportTest(t, columnList, [][]string{
@@ -108,8 +108,8 @@ func TestGenerateReport_SingleColumn(t *testing.T) {
 
 func TestGenerateReport_Uuid(t *testing.T) {
 	columnList := []common.ColumnInfo{
-		{OrdinalPosition: 1, ColumnName: "id", DataType: "bigint", IsNullable: "NO", EntryCount: 400},
-		{OrdinalPosition: 2, ColumnName: "uuid", DataType: "uuid", IsNullable: "NO", EntryCount: 400},
+		{OrdinalPosition: 1, ColumnName: "id", DataType: "bigint", IsNullable: "NO", TypLen: 8, TypAlign: 8, EntryCount: 400},
+		{OrdinalPosition: 2, ColumnName: "uuid", DataType: "uuid", IsNullable: "NO", TypLen: 16, TypAlign: -1, EntryCount: 400},
 	}
 
 	generateReportTest(t, columnList, [][]string{
