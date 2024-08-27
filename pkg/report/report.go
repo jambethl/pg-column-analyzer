@@ -4,7 +4,6 @@ import (
 	"encoding/csv"
 	"fmt"
 	"os"
-	"sort"
 	"strconv"
 
 	"main/pkg/common"
@@ -25,8 +24,6 @@ func GenerateReport(columnList []common.ColumnInfo, tableName string) error {
 		return fmt.Errorf("unable to write CSV header: %v", err)
 	}
 
-	sortedColumnList := sortColumnsBySize(columnList)
-
 	// Write current column order with padding information
 	for i, col := range columnList {
 		currentSize := col.TypAlign
@@ -36,7 +33,7 @@ func GenerateReport(columnList []common.ColumnInfo, tableName string) error {
 		}
 
 		wastedPadding := calculateWastedPadding(currentSize, nextSize)
-		recommendedPosition := findRecommendedPosition(col.ColumnName, sortedColumnList)
+		recommendedPosition := findRecommendedPosition(col.ColumnName, columnList)
 
 		row := []string{
 			strconv.Itoa(col.OrdinalPosition),
@@ -68,14 +65,6 @@ func writeCSVHeader(writer *csv.Writer) error {
 		"Recommended Position",
 		"Total Wasted Space",
 	})
-}
-
-func sortColumnsBySize(columnList []common.ColumnInfo) []common.ColumnInfo {
-	sort.SliceStable(columnList, func(i, j int) bool {
-		return columnList[i].TypLen > columnList[j].TypLen
-	})
-
-	return columnList
 }
 
 func calculateWastedPadding(currentSize, nextSize int) int {
