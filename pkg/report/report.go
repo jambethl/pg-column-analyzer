@@ -4,6 +4,7 @@ import (
 	"encoding/csv"
 	"fmt"
 	"os"
+	"sort"
 	"strconv"
 
 	"main/pkg/common"
@@ -24,6 +25,8 @@ func GenerateReport(columnList []common.ColumnInfo, tableName string) error {
 		return fmt.Errorf("unable to write CSV header: %v", err)
 	}
 
+	alignmentMap := buildAlignmentMap(columnList)
+
 	// Write current column order with padding information
 	for i, col := range columnList {
 		currentSize := col.TypAlign
@@ -33,7 +36,6 @@ func GenerateReport(columnList []common.ColumnInfo, tableName string) error {
 		}
 
 		wastedPadding := calculateWastedPadding(currentSize, nextSize)
-		recommendedPosition := findRecommendedPosition(col.ColumnName, columnList)
 
 		row := []string{
 			strconv.Itoa(col.OrdinalPosition),
@@ -42,7 +44,7 @@ func GenerateReport(columnList []common.ColumnInfo, tableName string) error {
 			col.IsNullable,
 			strconv.Itoa(col.TypLen),
 			strconv.Itoa(wastedPadding),
-			strconv.Itoa(recommendedPosition),
+			strconv.Itoa(alignmentMap[col.ColumnName]),
 			strconv.Itoa(col.EntryCount * wastedPadding),
 		}
 		if err := writer.Write(row); err != nil {
@@ -80,11 +82,26 @@ func calculateWastedPadding(currentSize, nextSize int) int {
 	return nextSize - remainder
 }
 
-func findRecommendedPosition(columnName string, sortedColumnList []common.ColumnInfo) int {
-	for i, col := range sortedColumnList {
-		if col.ColumnName == columnName {
-			return i + 1
+func buildAlignmentMap(columnList []common.ColumnInfo) map[string]int {
+	copiedList := make([]common.ColumnInfo, len(columnList))
+	copy(copiedList, columnList)
+
+	sort.SliceStable(copiedList, func(i, j int) bool {
+		if copiedList[i].TypAlign == -1 {
+			return false
 		}
+		if copiedList[j].TypAlign == -1 {
+			return true
+		}
+		return copiedList[i].TypAlign > copiedList[j].TypAlign
+	})
+
+	columnMap := make(map[string]int)
+
+	for i, colInfo := range copiedList {
+		columnMap[colInfo.ColumnName] = i + 1
 	}
-	return -1
+
+	fmt.Print(columnMap)
+	return columnMap
 }
