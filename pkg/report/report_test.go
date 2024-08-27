@@ -35,7 +35,7 @@ func TestGenerateReport_NullableColumns(t *testing.T) {
 	}
 
 	generateReportTest(t, columnList, [][]string{
-		{"1", "description", "text", "YES", "0", "0", "2", "0"},
+		{"1", "description", "text", "YES", "1", "5", "2", "15"},
 		{"2", "price", "real", "YES", "4", "0", "1", "0"},
 	})
 }
@@ -47,8 +47,8 @@ func TestGenerateReport_SameDataType(t *testing.T) {
 	}
 
 	generateReportTest(t, columnList, [][]string{
-		{"1", "first_name", "varchar", "YES", "0", "0", "1", "0"},
-		{"2", "last_name", "varchar", "YES", "0", "0", "2", "0"},
+		{"1", "first_name", "varchar", "YES", "1", "0", "1", "0"},
+		{"2", "last_name", "varchar", "YES", "1", "0", "2", "0"},
 	})
 }
 
@@ -87,12 +87,12 @@ func TestGenerateReport_AllDataTypes(t *testing.T) {
 	}
 
 	generateReportTest(t, columnList, [][]string{
-		{"1", "id", "smallint", "NO", "2", "0", "4", "0"},
-		{"2", "status", "boolean", "NO", "1", "7", "5", "70"},
+		{"1", "id", "smallint", "NO", "2", "0", "3", "0"},
+		{"2", "status", "boolean", "NO", "1", "9", "4", "90"},
 		{"3", "created_at", "timestamp without time zone", "NO", "8", "0", "1", "0"},
 		{"4", "score", "double precision", "YES", "8", "0", "2", "0"},
-		{"5", "unique_id", "uuid", "NO", "8", "0", "3", "0"},
-		{"6", "data", "bytea", "YES", "0", "0", "6", "0"},
+		{"5", "unique_id", "uuid", "NO", "16", "0", "5", "0"},
+		{"6", "data", "bytea", "YES", "1", "0", "6", "0"},
 	})
 }
 
@@ -102,7 +102,7 @@ func TestGenerateReport_SingleColumn(t *testing.T) {
 	}
 
 	generateReportTest(t, columnList, [][]string{
-		{"1", "id", "uuid", "NO", "8", "0", "1", "0"},
+		{"1", "id", "uuid", "NO", "16", "0", "1", "0"},
 	})
 }
 
@@ -114,7 +114,7 @@ func TestGenerateReport_Uuid(t *testing.T) {
 
 	generateReportTest(t, columnList, [][]string{
 		{"1", "id", "bigint", "NO", "8", "0", "1", "0"},
-		{"2", "uuid", "uuid", "NO", "8", "0", "2", "0"},
+		{"2", "uuid", "uuid", "NO", "16", "0", "2", "0"},
 	})
 }
 
