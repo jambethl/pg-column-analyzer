@@ -118,6 +118,26 @@ func TestGenerateReport_Uuid(t *testing.T) {
 	})
 }
 
+func TestGenerateReport_EDBExample(t *testing.T) {
+	columnList := []common.ColumnInfo{
+		{OrdinalPosition: 1, ColumnName: "a", DataType: "char", IsNullable: "NO", TypLen: 1, TypAlign: 1, EntryCount: 10},
+		{OrdinalPosition: 2, ColumnName: "b", DataType: "int2", IsNullable: "NO", TypLen: 2, TypAlign: 2, EntryCount: 10},
+		{OrdinalPosition: 3, ColumnName: "c", DataType: "char", IsNullable: "NO", TypLen: 1, TypAlign: 1, EntryCount: 10},
+		{OrdinalPosition: 4, ColumnName: "d", DataType: "int4", IsNullable: "NO", TypLen: 4, TypAlign: 4, EntryCount: 10},
+		{OrdinalPosition: 5, ColumnName: "e", DataType: "char", IsNullable: "NO", TypLen: 1, TypAlign: 1, EntryCount: 10},
+		{OrdinalPosition: 6, ColumnName: "f", DataType: "int8", IsNullable: "NO", TypLen: 8, TypAlign: 8, EntryCount: 10},
+	}
+
+	generateReportTest(t, columnList, [][]string{
+		{"1", "a", "char", "NO", "1", "1", "4", "10"},
+		{"2", "b", "int2", "NO", "2", "0", "3", "0"},
+		{"3", "c", "char", "NO", "1", "3", "5", "30"},
+		{"4", "d", "int4", "NO", "4", "0", "2", "0"},
+		{"5", "e", "char", "NO", "1", "7", "6", "70"},
+		{"6", "f", "int8", "NO", "8", "0", "1", "0"},
+	})
+}
+
 func generateReportTest(t *testing.T, columnList []common.ColumnInfo, expected [][]string) {
 	tmpDir := t.TempDir()
 	reportDir := createReportsDirectory(t, tmpDir)
