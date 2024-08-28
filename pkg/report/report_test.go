@@ -82,7 +82,7 @@ func TestGenerateReport_AllDataTypes(t *testing.T) {
 		{OrdinalPosition: 2, ColumnName: "status", DataType: "boolean", IsNullable: "NO", TypLen: 1, TypAlign: -1, EntryCount: 10},
 		{OrdinalPosition: 3, ColumnName: "created_at", DataType: "timestamp without time zone", IsNullable: "NO", TypLen: 8, TypAlign: 8, EntryCount: 10},
 		{OrdinalPosition: 4, ColumnName: "score", DataType: "double precision", IsNullable: "YES", TypLen: 8, TypAlign: 8, EntryCount: 6},
-		{OrdinalPosition: 5, ColumnName: "unique_id", DataType: "uuid", IsNullable: "NO", TypLen: 16, TypAlign: -1, EntryCount: 10},
+		{OrdinalPosition: 5, ColumnName: "unique_id", DataType: "uuid", IsNullable: "NO", TypLen: 8, TypAlign: -1, EntryCount: 10},
 		{OrdinalPosition: 6, ColumnName: "data", DataType: "bytea", IsNullable: "YES", TypLen: 1, TypAlign: -1, EntryCount: 5},
 	}
 
@@ -91,30 +91,30 @@ func TestGenerateReport_AllDataTypes(t *testing.T) {
 		{"2", "status", "boolean", "NO", "1", "9", "4", "90"},
 		{"3", "created_at", "timestamp without time zone", "NO", "8", "0", "1", "0"},
 		{"4", "score", "double precision", "YES", "8", "0", "2", "0"},
-		{"5", "unique_id", "uuid", "NO", "16", "0", "5", "0"},
+		{"5", "unique_id", "uuid", "NO", "8", "0", "5", "0"},
 		{"6", "data", "bytea", "YES", "1", "0", "6", "0"},
 	})
 }
 
 func TestGenerateReport_SingleColumn(t *testing.T) {
 	columnList := []common.ColumnInfo{
-		{OrdinalPosition: 1, ColumnName: "id", DataType: "uuid", IsNullable: "NO", TypLen: 16, TypAlign: -1},
+		{OrdinalPosition: 1, ColumnName: "id", DataType: "uuid", IsNullable: "NO", TypLen: 8, TypAlign: -1},
 	}
 
 	generateReportTest(t, columnList, [][]string{
-		{"1", "id", "uuid", "NO", "16", "0", "1", "0"},
+		{"1", "id", "uuid", "NO", "8", "0", "1", "0"},
 	})
 }
 
 func TestGenerateReport_Uuid(t *testing.T) {
 	columnList := []common.ColumnInfo{
 		{OrdinalPosition: 1, ColumnName: "id", DataType: "bigint", IsNullable: "NO", TypLen: 8, TypAlign: 8, EntryCount: 400},
-		{OrdinalPosition: 2, ColumnName: "uuid", DataType: "uuid", IsNullable: "NO", TypLen: 16, TypAlign: -1, EntryCount: 400},
+		{OrdinalPosition: 2, ColumnName: "uuid", DataType: "uuid", IsNullable: "NO", TypLen: 8, TypAlign: -1, EntryCount: 400},
 	}
 
 	generateReportTest(t, columnList, [][]string{
 		{"1", "id", "bigint", "NO", "8", "0", "1", "0"},
-		{"2", "uuid", "uuid", "NO", "16", "0", "2", "0"},
+		{"2", "uuid", "uuid", "NO", "8", "0", "2", "0"},
 	})
 }
 
