@@ -63,7 +63,7 @@ func writeCSVHeader(writer *csv.Writer) error {
 		"Data Type",
 		"Nullable",
 		"Data Type Size (B)",
-		"Wasted Padding Per Entry",
+		"Wasted Padding Per Entry (B)",
 		"Recommended Position",
 		"Total Wasted Space",
 	})
