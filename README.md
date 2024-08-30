@@ -8,6 +8,7 @@ PostgreSQL Column Analyzer is a CLI tool written in Go which iterates through yo
 - [Features](#features)
 - [Running](#running)
 - [Project Structure](#structure)
+- [Contributing](#contributing)
 
 ## Overview
 PostgreSQL optimises how data is stored on disk by padding columns so that they align with their neighbouring columns.
