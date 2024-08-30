@@ -94,3 +94,11 @@ The `pkg` contains a few sub-packages as defined below:
 * `db` -- responsible for opening the SQL database connection, and can be viewed as an abstraction of the database configuration.
 
 * `report` -- holds the logic for generating the CSV report which informs you of the recommended column order based on data type padding. This is where the supported data typed are defined along with their alignments.
+
+## Contributing
+There are many ways to contribute to this repository, including opening issues, raising PRs, and suggesting features.
+
+Some general guidelines for PRs:
+* Include unit tests if necessary
+* Write a sensible description explaining the benefits of the change
+* Keep PRs small; don't mix functional changes with 'cleanups'
