@@ -138,6 +138,28 @@ func TestGenerateReport_EDBExample(t *testing.T) {
 	})
 }
 
+func TestGenerateReport_ReadmeExample(t *testing.T) {
+	columnList := []common.ColumnInfo{
+		{OrdinalPosition: 1, ColumnName: "id", DataType: "bigint", IsNullable: "NO", TypLen: 8, TypAlign: 8, EntryCount: 10},
+		{OrdinalPosition: 2, ColumnName: "post_uid", DataType: "uuid", IsNullable: "NO", TypLen: 8, TypAlign: -1, EntryCount: 10},
+		{OrdinalPosition: 3, ColumnName: "author_uid", DataType: "uuid", IsNullable: "NO", TypLen: 8, TypAlign: -1, EntryCount: 10},
+		{OrdinalPosition: 4, ColumnName: "content", DataType: "text", IsNullable: "NO", TypLen: 1, TypAlign: -1, EntryCount: 10},
+		{OrdinalPosition: 5, ColumnName: "created_at", DataType: "timestamp without timezone", IsNullable: "NO", TypLen: 8, TypAlign: 8, EntryCount: 10},
+		{OrdinalPosition: 6, ColumnName: "like_count", DataType: "integer", IsNullable: "NO", TypLen: 4, TypAlign: 4, EntryCount: 10},
+		{OrdinalPosition: 7, ColumnName: "comment_count", DataType: "integer", IsNullable: "NO", TypLen: 4, TypAlign: 4, EntryCount: 10},
+	}
+
+	generateReportTest(t, columnList, [][]string{
+		{"1", "id", "bigint", "NO", "8", "0", "1", "0"},
+		{"2", "post_uid", "uuid", "NO", "8", "0", "5", "0"},
+		{"3", "author_uid", "uuid", "NO", "8", "0", "6", "0"},
+		{"4", "content", "text", "NO", "1", "9", "7", "90"},
+		{"5", "created_at", "timestamp without timezone", "NO", "8", "0", "2", "0"},
+		{"6", "like_count", "integer", "NO", "4", "0", "3", "0"},
+		{"7", "comment_count", "integer", "NO", "4", "0", "4", "0"},
+	})
+}
+
 func generateReportTest(t *testing.T, columnList []common.ColumnInfo, expected [][]string) {
 	tmpDir := t.TempDir()
 	reportDir := createReportsDirectory(t, tmpDir)
