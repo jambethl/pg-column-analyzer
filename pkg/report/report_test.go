@@ -10,7 +10,7 @@ import (
 	"main/pkg/common"
 )
 
-var expectedHeader = []string{"Ordinal Position", "Column Name", "Data Type", "Nullable", "Data Type Size (B)", "Wasted Padding Per Entry (B)", "Recommended Position", "Total Wasted Space"}
+var expectedHeader = []string{"Ordinal Position", "Column Name", "Data Type", "Nullable", "Data Type Size (B)", "Type Alignment (B)", "Wasted Padding Per Entry (B)", "Recommended Position", "Total Wasted Space"}
 
 func TestGenerateReport(t *testing.T) {
 	columnList := []common.ColumnInfo{
@@ -21,10 +21,10 @@ func TestGenerateReport(t *testing.T) {
 	}
 
 	generateReportTest(t, columnList, [][]string{
-		{"1", "enabled", "boolean", "NO", "1", "3", "4", "30"},
-		{"2", "age", "smallint", "NO", "2", "2", "3", "20"},
-		{"3", "count", "integer", "NO", "4", "4", "2", "40"},
-		{"4", "id", "bigint", "NO", "8", "0", "1", "0"},
+		{"1", "enabled", "boolean", "NO", "1", "-1", "3", "4", "30"},
+		{"2", "age", "smallint", "NO", "2", "2", "2", "3", "20"},
+		{"3", "count", "integer", "NO", "4", "4", "4", "2", "40"},
+		{"4", "id", "bigint", "NO", "8", "8", "0", "1", "0"},
 	})
 }
 
@@ -35,8 +35,8 @@ func TestGenerateReport_NullableColumns(t *testing.T) {
 	}
 
 	generateReportTest(t, columnList, [][]string{
-		{"1", "description", "text", "YES", "1", "5", "2", "15"},
-		{"2", "price", "real", "YES", "4", "0", "1", "0"},
+		{"1", "description", "text", "YES", "1", "-1", "5", "2", "15"},
+		{"2", "price", "real", "YES", "4", "4", "0", "1", "0"},
 	})
 }
 
@@ -47,8 +47,8 @@ func TestGenerateReport_SameDataType(t *testing.T) {
 	}
 
 	generateReportTest(t, columnList, [][]string{
-		{"1", "first_name", "varchar", "YES", "1", "0", "1", "0"},
-		{"2", "last_name", "varchar", "YES", "1", "0", "2", "0"},
+		{"1", "first_name", "varchar", "YES", "1", "-1", "0", "1", "0"},
+		{"2", "last_name", "varchar", "YES", "1", "-1", "0", "2", "0"},
 	})
 }
 
@@ -65,14 +65,14 @@ func TestGenerateReport_SOExample(t *testing.T) {
 	}
 
 	generateReportTest(t, columnList, [][]string{
-		{"1", "e", "smallint", "NO", "2", "6", "5", "60"},
-		{"2", "a", "bigint", "NO", "8", "0", "1", "0"},
-		{"3", "f", "smallint", "NO", "2", "6", "6", "60"},
-		{"4", "b", "bigint", "NO", "8", "0", "2", "0"},
-		{"5", "g", "smallint", "NO", "2", "6", "7", "60"},
-		{"6", "c", "bigint", "NO", "8", "0", "3", "0"},
-		{"7", "h", "smallint", "NO", "2", "6", "8", "60"},
-		{"8", "d", "bigint", "NO", "8", "0", "4", "0"},
+		{"1", "e", "smallint", "NO", "2", "2", "6", "5", "60"},
+		{"2", "a", "bigint", "NO", "8", "8", "0", "1", "0"},
+		{"3", "f", "smallint", "NO", "2", "2", "6", "6", "60"},
+		{"4", "b", "bigint", "NO", "8", "8", "0", "2", "0"},
+		{"5", "g", "smallint", "NO", "2", "2", "6", "7", "60"},
+		{"6", "c", "bigint", "NO", "8", "8", "0", "3", "0"},
+		{"7", "h", "smallint", "NO", "2", "2", "6", "8", "60"},
+		{"8", "d", "bigint", "NO", "8", "8", "0", "4", "0"},
 	})
 }
 
@@ -87,12 +87,12 @@ func TestGenerateReport_AllDataTypes(t *testing.T) {
 	}
 
 	generateReportTest(t, columnList, [][]string{
-		{"1", "id", "smallint", "NO", "2", "0", "3", "0"},
-		{"2", "status", "boolean", "NO", "1", "9", "4", "90"},
-		{"3", "created_at", "timestamp without time zone", "NO", "8", "0", "1", "0"},
-		{"4", "score", "double precision", "YES", "8", "0", "2", "0"},
-		{"5", "unique_id", "uuid", "NO", "8", "0", "5", "0"},
-		{"6", "data", "bytea", "YES", "1", "0", "6", "0"},
+		{"1", "id", "smallint", "NO", "2", "2", "0", "3", "0"},
+		{"2", "status", "boolean", "NO", "1", "-1", "9", "4", "90"},
+		{"3", "created_at", "timestamp without time zone", "NO", "8", "8", "0", "1", "0"},
+		{"4", "score", "double precision", "YES", "8", "8", "0", "2", "0"},
+		{"5", "unique_id", "uuid", "NO", "8", "-1", "0", "5", "0"},
+		{"6", "data", "bytea", "YES", "1", "-1", "0", "6", "0"},
 	})
 }
 
@@ -102,7 +102,7 @@ func TestGenerateReport_SingleColumn(t *testing.T) {
 	}
 
 	generateReportTest(t, columnList, [][]string{
-		{"1", "id", "uuid", "NO", "8", "0", "1", "0"},
+		{"1", "id", "uuid", "NO", "8", "-1", "0", "1", "0"},
 	})
 }
 
@@ -113,8 +113,8 @@ func TestGenerateReport_Uuid(t *testing.T) {
 	}
 
 	generateReportTest(t, columnList, [][]string{
-		{"1", "id", "bigint", "NO", "8", "0", "1", "0"},
-		{"2", "uuid", "uuid", "NO", "8", "0", "2", "0"},
+		{"1", "id", "bigint", "NO", "8", "8", "0", "1", "0"},
+		{"2", "uuid", "uuid", "NO", "8", "-1", "0", "2", "0"},
 	})
 }
 
@@ -129,12 +129,12 @@ func TestGenerateReport_EDBExample(t *testing.T) {
 	}
 
 	generateReportTest(t, columnList, [][]string{
-		{"1", "a", "char", "NO", "1", "1", "4", "10"},
-		{"2", "b", "int2", "NO", "2", "0", "3", "0"},
-		{"3", "c", "char", "NO", "1", "3", "5", "30"},
-		{"4", "d", "int4", "NO", "4", "0", "2", "0"},
-		{"5", "e", "char", "NO", "1", "7", "6", "70"},
-		{"6", "f", "int8", "NO", "8", "0", "1", "0"},
+		{"1", "a", "char", "NO", "1", "1", "1", "4", "10"},
+		{"2", "b", "int2", "NO", "2", "2", "0", "3", "0"},
+		{"3", "c", "char", "NO", "1", "1", "3", "5", "30"},
+		{"4", "d", "int4", "NO", "4", "4", "0", "2", "0"},
+		{"5", "e", "char", "NO", "1", "1", "7", "6", "70"},
+		{"6", "f", "int8", "NO", "8", "8", "0", "1", "0"},
 	})
 }
 
@@ -150,13 +150,13 @@ func TestGenerateReport_ReadmeExample(t *testing.T) {
 	}
 
 	generateReportTest(t, columnList, [][]string{
-		{"1", "id", "bigint", "NO", "8", "0", "1", "0"},
-		{"2", "post_uid", "uuid", "NO", "8", "0", "5", "0"},
-		{"3", "author_uid", "uuid", "NO", "8", "0", "6", "0"},
-		{"4", "content", "text", "NO", "1", "9", "7", "90"},
-		{"5", "created_at", "timestamp without timezone", "NO", "8", "0", "2", "0"},
-		{"6", "like_count", "integer", "NO", "4", "0", "3", "0"},
-		{"7", "comment_count", "integer", "NO", "4", "0", "4", "0"},
+		{"1", "id", "bigint", "NO", "8", "8", "0", "1", "0"},
+		{"2", "post_uid", "uuid", "NO", "8", "-1", "0", "5", "0"},
+		{"3", "author_uid", "uuid", "NO", "8", "-1", "0", "6", "0"},
+		{"4", "content", "text", "NO", "1", "-1", "9", "7", "90"},
+		{"5", "created_at", "timestamp without timezone", "NO", "8", "8", "0", "2", "0"},
+		{"6", "like_count", "integer", "NO", "4", "4", "0", "3", "0"},
+		{"7", "comment_count", "integer", "NO", "4", "4", "0", "4", "0"},
 	})
 }
 
