@@ -44,6 +44,18 @@ this alignment padding adds up.
 | 6                | like_count    | integer                     | NO       | 4                  | 4                  | 0                              | 6                    | 0                  |
 | 7                | comment_count | integer                     | NO       | 4                  | 4                  | 0                              | 7                    | 0                  |
 
+The above example can be explained as follows:
+* `Ordinal Position` -- this is the current position of the column
+* `Column Name` -- the name of the column
+* `Data Type` -- the Postgres data type
+* `Nullable` -- whether the column is nullable. Possible values `YES` or `NO`
+* `Data Type Size (B)` -- the size in bytes of the column's data type
+* `Type Alignment (B)` -- the type alignment of the column's data type in bytes, as defined by [Postgres' documentation](https://www.postgresql.org/docs/current/catalog-pg-type.html)
+* `Wasted Padding Per Entry (B)` -- how much space is wasted due to sub-optimal column alignment
+* `Recommended Position` -- the suggested column order to optimise for alignment padding
+* `Total Wasted Space` -- the total wasted space due to sub-optimal column alignment; calculated based on the total size of the table
+
+
 ## Running
 There are five supported optional arguments:
 * Database Name
