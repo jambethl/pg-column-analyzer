@@ -34,7 +34,8 @@ this alignment padding adds up.
 - Generates a CSV report with the optimal column order and space-saving suggestions.
 
 ### Example output
-| Ordinal Position | Column Name   | Data Type                   | Nullable | Data Type Size (B) | Type Alignment (B) | Wasted Padding Per Entry (B)   | Recommended Position | Total Wasted Space |
+*You may need to scroll horizontally to view the full output*
+| Ordinal Position | Column Name   | Data Type                   | Nullable | Data Type Size (B) | Type Alignment (B) | Wasted Padding Per Entry (B)   | Recommended Position | Total Wasted Space (B) |
 |------------------|---------------|-----------------------------|----------|--------------------|--------------------|--------------------------------|----------------------|---------------------
 | 1                | id            | bigint                      | NO       | 8                  | 8                  | 0                              | 2                    | 0                  |
 | 2                | post_uid      | uuid                        | NO       | 8                  | -1                 | 0                              | 3                    | 0                  |
