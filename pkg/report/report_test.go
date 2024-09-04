@@ -10,7 +10,7 @@ import (
 	"main/pkg/common"
 )
 
-var expectedHeader = []string{"Ordinal Position", "Column Name", "Data Type", "Nullable", "Data Type Size (B)", "Type Alignment (B)", "Wasted Padding Per Entry (B)", "Recommended Position", "Total Wasted Space"}
+var expectedHeader = []string{"Ordinal Position", "Column Name", "Data Type", "Nullable", "Data Type Size (B)", "Type Alignment (B)", "Wasted Padding Per Entry (B)", "Recommended Position", "Total Wasted Space (B)"}
 
 func TestGenerateReport(t *testing.T) {
 	columnList := []common.ColumnInfo{

@@ -67,7 +67,7 @@ func writeCSVHeader(writer *csv.Writer) error {
 		"Type Alignment (B)",
 		"Wasted Padding Per Entry (B)",
 		"Recommended Position",
-		"Total Wasted Space",
+		"Total Wasted Space (B)",
 	})
 }
 
