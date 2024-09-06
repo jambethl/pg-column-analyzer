@@ -88,13 +88,7 @@ func buildAlignmentMap(columnList []common.ColumnInfo) map[string]int {
 	copiedList := make([]common.ColumnInfo, len(columnList))
 	copy(copiedList, columnList)
 
-	sort.SliceStable(copiedList, func(i, j int) bool {
-		if copiedList[i].TypAlign == -1 {
-			return false
-		}
-		if copiedList[j].TypAlign == -1 {
-			return true
-		}
+	sort.Slice(copiedList, func(i, j int) bool {
 		return copiedList[i].TypAlign > copiedList[j].TypAlign
 	})
 
