@@ -104,6 +104,5 @@ func buildAlignmentMap(columnList []common.ColumnInfo) map[string]int {
 		columnMap[colInfo.ColumnName] = i + 1
 	}
 
-	fmt.Print(columnMap)
 	return columnMap
 }
