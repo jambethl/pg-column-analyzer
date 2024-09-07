@@ -79,12 +79,12 @@ func Execute() {
 }
 
 func init() {
-	rootCmd.PersistentFlags().StringVarP(&dbName, "database", "d", "postgres", "Database name")
-	rootCmd.PersistentFlags().StringVarP(&userName, "username", "u", "postgres", "Username")
-	rootCmd.PersistentFlags().StringVarP(&password, "password", "p", "123", "Password")
-	rootCmd.PersistentFlags().StringVarP(&host, "host", "l", "localhost", "Host")
-	rootCmd.PersistentFlags().StringVarP(&schemaName, "schema", "s", "public", "Schema name")
-	rootCmd.PersistentFlags().StringVarP(&port, "port", "t", "5432", "Port")
+	rootCmd.Flags().StringVarP(&dbName, "database", "d", "postgres", "Database name")
+	rootCmd.Flags().StringVarP(&userName, "username", "u", "postgres", "Username")
+	rootCmd.Flags().StringVarP(&password, "password", "p", "123", "Password")
+	rootCmd.Flags().StringVarP(&host, "host", "l", "localhost", "Host")
+	rootCmd.Flags().StringVarP(&schemaName, "schema", "s", "public", "Schema name")
+	rootCmd.Flags().StringVarP(&port, "port", "t", "5432", "Port")
 }
 
 func configureDatabase() {

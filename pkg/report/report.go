@@ -25,6 +25,9 @@ func GenerateReport(columnList []common.ColumnInfo, tableName string) error {
 		return fmt.Errorf("unable to write CSV header: %v", err)
 	}
 
+	// Build a map here to store the recommended position as the map's value.
+	// We could sort the list of columns by their type alignment, but retrieving
+	// the given column would take O(n) since we don't know its position.
 	alignmentMap := buildAlignmentMap(columnList)
 
 	// Write current column order with padding information
