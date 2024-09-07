@@ -48,13 +48,6 @@ const (
 		WHERE table_schema = '%s';`
 )
 
-var alignmentMap = map[string]int{
-	"c": -1,
-	"s": 2,
-	"i": 4,
-	"d": 8,
-}
-
 var (
 	dbName     string
 	userName   string
@@ -62,15 +55,22 @@ var (
 	host       string
 	schemaName string
 	port       string
-)
 
-var rootCmd = &cobra.Command{
-	Use:   "cli",
-	Short: "A CLI tool for PostgreSQL column order optimization",
-	Run: func(cmd *cobra.Command, arg []string) {
-		configureDatabase()
-	},
-}
+	alignmentMap = map[string]int{
+		"c": -1,
+		"s": 2,
+		"i": 4,
+		"d": 8,
+	}
+
+	rootCmd = &cobra.Command{
+		Use:   "cli",
+		Short: "A CLI tool for PostgreSQL column order optimization",
+		Run: func(cmd *cobra.Command, arg []string) {
+			configureDatabase()
+		},
+	}
+)
 
 func Execute() {
 	if err := rootCmd.Execute(); err != nil {
