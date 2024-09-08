@@ -37,13 +37,13 @@ this alignment padding adds up.
 *You may need to scroll horizontally to view the full output*
 | Ordinal Position | Column Name   | Data Type                   | Nullable | Data Type Size (B) | Type Alignment (B) | Wasted Padding Per Entry (B)   | Recommended Position | Total Wasted Space (B) |
 |------------------|---------------|-----------------------------|----------|--------------------|--------------------|--------------------------------|----------------------|---------------------
-| 1                | id            | bigint                      | NO       | 8                  | 8                  | 0                              | 2                    | 0                  |
-| 2                | post_uid      | uuid                        | NO       | 8                  | -1                 | 0                              | 3                    | 0                  |
-| 3                | author_uid    | uuid                        | NO       | 8                  | -1                 | 2                              | 4                    | 2776               |
-| 4                | content       | text                        | NO       | 10                 | -1                 | 6                              | 1                    | 8328               |
-| 5                | created_at    | timestamp without timezone  | NO       | 8                  | 8                  | 0                              | 5                    | 0                  |
-| 6                | like_count    | integer                     | NO       | 4                  | 4                  | 0                              | 6                    | 0                  |
-| 7                | comment_count | integer                     | NO       | 4                  | 4                  | 0                              | 7                    | 0                  |
+| 1                | id            | bigint                      | NO       | 8                  | 8                  | 0                              | 1                    | 0                  |
+| 2                | post_uid      | uuid                        | NO       | 8                  | -1                 | 0                              | 5                    | 0                  |
+| 3                | author_uid    | uuid                        | NO       | 8                  | -1                 | 2                              | 6                    | 2776               |
+| 4                | content       | text                        | NO       | 10                 | -1                 | 6                              | 7                    | 8328               |
+| 5                | created_at    | timestamp without timezone  | NO       | 8                  | 8                  | 0                              | 2                    | 0                  |
+| 6                | like_count    | integer                     | NO       | 4                  | 4                  | 0                              | 3                    | 0                  |
+| 7                | comment_count | integer                     | NO       | 4                  | 4                  | 0                              | 4                    | 0                  |
 
 The above example can be explained as follows:
 * `Ordinal Position` -- this is the current position of the column
