@@ -55,6 +55,7 @@ var (
 	host       string
 	schemaName string
 	port       string
+	table      string
 
 	alignmentMap = map[string]int{
 		"c": -1,
@@ -84,7 +85,8 @@ func init() {
 	rootCmd.Flags().StringVarP(&password, "password", "p", "123", "Password")
 	rootCmd.Flags().StringVarP(&host, "host", "l", "localhost", "Host")
 	rootCmd.Flags().StringVarP(&schemaName, "schema", "s", "public", "Schema name")
-	rootCmd.Flags().StringVarP(&port, "port", "t", "5432", "Port")
+	rootCmd.Flags().StringVarP(&port, "port", "P", "5432", "Port")
+	rootCmd.Flags().StringVarP(&table, "table", "t", "", "Table name")
 }
 
 func configureDatabase() {
@@ -104,13 +106,21 @@ func configureDatabase() {
 
 	defer connection.Close()
 
+	if err := os.MkdirAll("reports", 0o755); err != nil {
+		log.Fatalf("Failed to create reports directory: %v", err)
+	}
+
+	if table == "" {
+		generateReportForAllTablesInSchema(connection)
+	} else {
+		generateReportForTable(connection, schemaName, table)
+	}
+}
+
+func generateReportForAllTablesInSchema(connection *sql.DB) {
 	tables, err := fetchTables(connection, schemaName)
 	if err != nil {
 		log.Fatalf("Failed to fetch tables: %v", err)
-	}
-
-	if err := os.MkdirAll("reports", 0o755); err != nil {
-		log.Fatalf("Failed to create reports directory: %v", err)
 	}
 
 	for _, table := range tables {
