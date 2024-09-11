@@ -81,8 +81,12 @@ There are five supported optional arguments:
   * default: `public`
 * Port
   * name: `port`
-  * shorthand: `t`
+  * shorthand: `P`
   * default: `5432`
+* Table Name
+  *  name: `table`
+  *  shorthand: `t`
+  *  default: `""` (will query all tables if nothing provided)
 
 ```sh
 go run main.go
